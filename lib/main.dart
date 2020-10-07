@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:vk_papers/screens/LoginScreen.dart';
 // import 'package:vk_papers/screens/NewsScreen.dart';
 import 'package:vk_papers/screens/SetTimersScreen.dart';
-import 'package:vk_papers/screens/notify.dart';
+// import 'package:vk_papers/screens/notify.dart';
 // import 'package:vk_papers/screens/SetTimersScreen.dart';
 
 import 'functions/Token.dart' as Token;
