@@ -42,20 +42,20 @@ class VKNewsfeed {
             .toLocal()
             .toString();
         String isAd = item["marked_as_ads"] == 1 ? "Да" : "Нет";
-        String text = item["text"];
+        String text = item["text"] == null ? "" : item["text"];
 
         String likes =
-            item["likes"] != null ? item["likes"]["count"].toString() : "0";
+            item["likes"] != null ? item["likes"]["count"].toString() : "";
 
         String comments = item["comments"] != null
             ? item["comments"]["count"].toString()
-            : "0";
+            : "";
 
         String reposts =
-            item["reposts"] != null ? item["reposts"]["count"].toString() : "0";
+            item["reposts"] != null ? item["reposts"]["count"].toString() : "";
 
         String views =
-            item["views"] != null ? item["views"]["count"].toString() : "0";
+            item["views"] != null ? item["views"]["count"].toString() : "";
         String isFavor = item["is_favorite"].toString();
         String postID = item["post_id"].toString();
 

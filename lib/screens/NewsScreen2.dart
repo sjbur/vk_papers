@@ -19,8 +19,8 @@ class _NewsScreen2State extends State<NewsScreen2> {
 
   void load() async {
     await vk.init();
-    posts =
-        await vk.newsfeed.getNews("?filters=post&count=1&source_ids=-77988045");
+    posts = await vk.newsfeed
+        .getNews("?filters=post&count=1&source_ids=-111162777");
     setState(() {});
   }
 
@@ -42,6 +42,10 @@ class _NewsScreen2State extends State<NewsScreen2> {
                     timeAgo: posts[index].properties["postDate"],
                     postText: posts[index].properties["text"],
                     attachments: posts[index].attachments,
+                    likes: posts[index].properties["likes"],
+                    comments: posts[index].properties["comments"],
+                    reposts: posts[index].properties["reposts"],
+                    views: posts[index].properties["views"],
                   );
                 },
               ));
