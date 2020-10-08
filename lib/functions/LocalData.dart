@@ -42,9 +42,14 @@ Future<bool> timersExist() async {
   }
 }
 
+Future<List<String>> loadTimers() async {
+  final file = await getTimersFile();
+  return jsonDecode(await file.readAsString());
+}
+
 Future saveTimers(List<String> ls) async {
   final file = await getTimersFile();
-  file.writeAsString(jsonEncode(ls.toString()));
+  file.writeAsString(jsonEncode(ls));
 
-  print(await file.readAsString());
+  //print(await file.readAsString());
 }

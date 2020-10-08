@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:vk_papers/functions/LocalData.dart';
+import 'package:vk_papers/functions/swipe.dart';
 import 'package:vk_papers/screens/FinishScreen.dart';
+import 'package:vk_papers/screens/ShowGroupsScreen.dart';
 import 'package:vk_papers/timepicker/flutter_datetime_picker.dart';
 
 class SetTimersScreen extends StatefulWidget {
@@ -26,14 +30,10 @@ class _SetTimersScreenState extends State<SetTimersScreen> {
   }
 
   Future selected(String payload) async {
-    print("aue");
-    await Navigator.pushReplacement(
-      context,
-      new MaterialPageRoute(builder: (context) => new FinishScreen()),
-    );
+    await Navigator.of(context).push(GoTo(ShowGroupsScreen(), left: true));
   }
 
-  Future singleNotification(String message, String subtext, int hashcode,
+  Future makeNotifications(String message, String subtext,
       {String sound}) async {
     var androidChannel = AndroidNotificationDetails(
       'channel-id',
@@ -45,15 +45,22 @@ class _SetTimersScreenState extends State<SetTimersScreen> {
 
     var iosChannel = IOSNotificationDetails();
     var platformChannel = NotificationDetails(androidChannel, iosChannel);
-    // localNotificationsPlugin.schedule(
-    //     hashcode, message, subtext, datetime, platformChannel,
-    //     payload: hashcode.toString());
 
-    Time time = new Time(20, 35, 0);
+    List<String> savedTimers = await loadTimers();
 
-    fltrNotification.showDailyAtTime(
-        hashcode, message, subtext, time, platformChannel,
-        payload: hashcode.toString());
+    await fltrNotification.cancelAll();
+
+    savedTimers.forEach((element) {
+      String textTime = element;
+      textTime = textTime.trim();
+
+      Time time = Time(int.parse(textTime.split(":")[0].toString()),
+          int.parse(textTime.split(":")[1].toString()), 0);
+
+      fltrNotification.showDailyAtTime(
+          0, message, subtext, time, platformChannel,
+          payload: "0");
+    });
   }
 
   @override
@@ -79,18 +86,19 @@ class _SetTimersScreenState extends State<SetTimersScreen> {
                       theme: DatePickerTheme(
                         containerHeight: 210.0,
                       ),
-                      showTitleActions: true, onConfirm: (time) {
-                    print('confirm $time');
-
-                    setState(() {
-                      timers.add(time.hour.toString() +
-                          " : " +
-                          time.minute.toString());
-                    });
-                  }, currentTime: DateTime.now(), locale: LocaleType.ru);
-                  setState(
-                    () {},
-                  );
+                      showTitleActions: true,
+                      onConfirm: (time) => setState(() => timers.add(
+                          time.hour.toString() +
+                              " : " +
+                              time.minute.toString())),
+                      currentTime: new DateTime(
+                          DateTime.now().year,
+                          DateTime.now().month,
+                          DateTime.now().day,
+                          DateTime.now().hour,
+                          0,
+                          0),
+                      locale: LocaleType.ru);
                 })
           ],
         ),
@@ -115,33 +123,32 @@ class _SetTimersScreenState extends State<SetTimersScreen> {
                 },
               ),
             ),
-            timers.isEmpty
-                ? Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Вам нужно добавить таймеры',
-                    ),
-                  )
-                : Text(""),
-            Container(
-              alignment: Alignment.bottomCenter,
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: FlatButton(
-                    padding: EdgeInsets.all(16.0),
-                    color: Colors.blue,
-                    textColor: Colors.white,
-                    child: Text("Сохранить"),
-                    onPressed: () async {
-                      saveTimers(timers);
-                      await singleNotification(
-                        "Notification",
-                        "This is a notification",
-                        98123871,
-                      );
-                    }),
-              ),
-            )
+            if (timers.isEmpty)
+              Align(
+                alignment: Alignment.center,
+                child: Text(
+                  'Вам нужно добавить таймеры',
+                ),
+              )
+            else
+              Container(
+                alignment: Alignment.bottomCenter,
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: FlatButton(
+                      padding: EdgeInsets.all(16.0),
+                      color: Colors.blue,
+                      textColor: Colors.white,
+                      child: Text("Сохранить"),
+                      onPressed: () async {
+                        await saveTimers(timers);
+                        await makeNotifications(
+                            "VK Papers", "Новые новости уже пришли!");
+                        await Navigator.of(context)
+                            .push(GoTo(FinishScreen(), left: true));
+                      }),
+                ),
+              )
           ],
         ));
   }
