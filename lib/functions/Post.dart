@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:vk_papers/VK%20api/Newsfeed.dart';
-import 'package:vk_papers/VideoPlay.dart';
+import 'package:vk_papers/widgets/VideoPlay.dart';
 
 class PostCard extends StatefulWidget {
   final String groupName;
