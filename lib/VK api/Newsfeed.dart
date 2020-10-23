@@ -119,7 +119,7 @@ class VKNewsfeed {
 
         Attachment newAttachment;
 
-        print(attachmentType);
+        // print(attachmentType);
         switch (attachmentType) {
           case "link":
             Map<String, dynamic> content = {
