@@ -23,7 +23,9 @@ class VKNewsfeed {
     Map<String, dynamic> js = await jsonDecode(response.body);
 
     if (js.containsKey("error")) {
-      throw Exception(js["error"]);
+      print("Error");
+      return null;
+      //throw Exception(js["error"]);
     } else {
       js = js["response"];
 
@@ -117,23 +119,46 @@ class VKNewsfeed {
 
         Attachment newAttachment;
 
+        print(attachmentType);
         switch (attachmentType) {
           case "link":
             Map<String, dynamic> content = {
               "url": attachment["link"]["url"],
               "title": attachment["link"]["title"]
             };
-            newAttachment = new Attachment("link", content);
 
             if (attachment["link"]["photo"] != null) {
               content.putIfAbsent("photo", () => attachment["link"]["photo"]);
             }
+
+            newAttachment = new Attachment("link", content);
+
             break;
           case "photo":
             Map<String, dynamic> content = {
               "sizes": attachment["photo"]["sizes"]
             };
             newAttachment = new Attachment("photo", content);
+            break;
+
+          case "doc":
+            Map<String, dynamic> content = attachment["doc"];
+
+            newAttachment = new Attachment(attachment["doc"]["ext"], content);
+
+            break;
+
+          case "video":
+            Map<String, dynamic> content = attachment["video"];
+
+            newAttachment = new Attachment("video", content);
+
+            break;
+
+          case "poll":
+            Map<String, dynamic> content = attachment["poll"];
+
+            newAttachment = new Attachment("poll", content);
             break;
         }
 

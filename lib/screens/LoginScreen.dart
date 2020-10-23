@@ -39,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return WebView(
       initialUrl:
-          "https://oauth.vk.com/authorize?client_id=7574653&display=mobile&redirect_uri=https://oauth.vk.com/blank.html&scope=offline,groups,wall,friends&response_type=token&v=5.52",
+          "https://oauth.vk.com/authorize?client_id=7574653&display=mobile&redirect_uri=https://oauth.vk.com/blank.html&scope=offline,groups,wall,friends,video&response_type=token&v=5.52",
       javascriptMode: JavascriptMode.unrestricted,
       onWebViewCreated: (WebViewController webController) {
         _controller.complete(webController);

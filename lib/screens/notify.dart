@@ -47,14 +47,14 @@ class _HomePageState extends State {
     var generalNotificationDetails =
         new NotificationDetails(androidDetails, iSODetails);
 
-    var scheduledTime;
-    if (_selectedParam == "Hour") {
-      scheduledTime = DateTime.now().add(Duration(hours: val));
-    } else if (_selectedParam == "Minute") {
-      scheduledTime = DateTime.now().add(Duration(minutes: val));
-    } else {
-      scheduledTime = DateTime.now().add(Duration(seconds: val));
-    }
+    // var scheduledTime;
+    // if (_selectedParam == "Hour") {
+    //   scheduledTime = DateTime.now().add(Duration(hours: val));
+    // } else if (_selectedParam == "Minute") {
+    //   scheduledTime = DateTime.now().add(Duration(minutes: val));
+    // } else {
+    //   scheduledTime = DateTime.now().add(Duration(seconds: val));
+    // }
 
     Time af = Time(20, 27, 20);
 

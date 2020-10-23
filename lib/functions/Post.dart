@@ -1,7 +1,11 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:vk_papers/VK%20api/Newsfeed.dart';
+import 'package:vk_papers/VideoPlay.dart';
 
 class PostCard extends StatefulWidget {
   final String groupName;
@@ -15,6 +19,9 @@ class PostCard extends StatefulWidget {
   final String views;
   final String reposts;
 
+  final String accessToken;
+  final String vkVersion;
+
   final List<Attachment> attachments;
 
   PostCard(this.context,
@@ -26,7 +33,9 @@ class PostCard extends StatefulWidget {
       this.likes,
       this.comments,
       this.reposts,
-      this.views});
+      this.views,
+      this.accessToken,
+      this.vkVersion});
 
   @override
   _PostCardState createState() => _PostCardState(this.context,
@@ -87,24 +96,15 @@ class _PostCardState extends State<PostCard> {
             title: Text(groupName),
             subtitle: Text(timeAgo),
           ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(8, 0, 8, 8),
-            child: postText != null
-                ? Align(
-                    alignment: Alignment.topLeft,
-                    child: Column(
-                      children: [
-                        Linkify(
-                            onOpen: (link) => launchURL(link.url),
-                            text: postText,
-                            options: LinkifyOptions(humanize: false)),
-                      ],
-                    ),
-                  )
-                : Text(""),
-          ),
+          if (postText != null || postText != "")
+            BuildTextPost(
+              postText: postText,
+            ),
           buildPhotoAttachments(),
-          postStatistics()
+          BuildPhotoLink(attachments),
+          buildDocumentsAttachments(),
+          buildVideos(),
+          postStatistics(),
         ],
       ),
     );
@@ -185,7 +185,7 @@ class _PostCardState extends State<PostCard> {
           child: Row(
             children: [
               IconButton(icon: Icon(Icons.favorite), onPressed: null),
-              if (likes != null) Text(likes) else Text("")
+              if (likes != null && likes != "0") Text(likes) else Text("")
             ],
           ),
         ),
@@ -193,7 +193,10 @@ class _PostCardState extends State<PostCard> {
           padding: const EdgeInsets.all(8.0),
           child: Row(children: [
             IconButton(icon: Icon(Icons.comment), onPressed: null),
-            if (comments != null) Text(comments) else Text("")
+            if (comments != null && comments != "0")
+              Text(comments)
+            else
+              Text("")
           ]),
         ),
         Padding(
@@ -201,7 +204,7 @@ class _PostCardState extends State<PostCard> {
           child: Row(
             children: [
               IconButton(icon: Icon(Icons.share), onPressed: null),
-              if (reposts != null) Text(reposts) else Text("")
+              if (reposts != null && reposts != "0") Text(reposts) else Text("")
             ],
           ),
         ),
@@ -210,7 +213,7 @@ class _PostCardState extends State<PostCard> {
           child: Row(
             children: [
               IconButton(icon: Icon(Icons.portrait), onPressed: null),
-              if (views != null) Text(views) else Text("")
+              if (views != null && views != "0") Text(views) else Text("")
             ],
           ),
         )
@@ -218,9 +221,290 @@ class _PostCardState extends State<PostCard> {
     );
   }
 
-  launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
+  Widget buildDocumentsAttachments() {
+    List<Widget> docs = new List<Widget>();
+    if (attachments != null) {
+      attachments.forEach((attachment) {
+        if (attachment.type == "gif") {
+          docs.add(BuildGif(
+              gifPreview: attachment.content["preview"]["photo"]["sizes"][0]
+                  ["src"],
+              gifUrl: attachment.content["url"]));
+        }
+      });
     }
+
+    return Column(
+      children: docs,
+    );
+  }
+
+  Widget buildVideos() {
+    List<Widget> res = new List<Widget>();
+
+    if (attachments != null) {
+      attachments.forEach((attachment) {
+        if (attachment.type == "video") {
+          res.add(VideoP(
+            token: widget.accessToken,
+            vkV: widget.vkVersion,
+            videoId: attachment.content["id"].toString(),
+            videoOwner: attachment.content["owner_id"].toString(),
+          ));
+        }
+      });
+    }
+
+    return Column(
+      children: res,
+    );
+  }
+}
+
+class BuildTextPost extends StatefulWidget {
+  final postText;
+
+  const BuildTextPost({Key key, this.postText}) : super(key: key);
+  @override
+  _BuildTextPostState createState() => _BuildTextPostState(postText);
+}
+
+class _BuildTextPostState extends State<BuildTextPost> {
+  final postText;
+  String textShorted;
+  bool shorted;
+
+  _BuildTextPostState(this.postText);
+
+  @override
+  void initState() {
+    super.initState();
+    if (postText.length > 300) textShorted = postText.substring(0, 300);
+    shorted = true;
+    setState(() {});
+  }
+
+  List<Widget> showText() {
+    if (textShorted != null) {
+      if (shorted)
+        return [
+          Linkify(
+              onOpen: (link) => launchURL(link.url),
+              text: textShorted,
+              options: LinkifyOptions(humanize: false)),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: FlatButton(
+              onPressed: () {
+                setState(() => shorted = false);
+              },
+              child: Text("Читать дальше"),
+            ),
+          )
+        ];
+      else
+        return [
+          Linkify(
+              onOpen: (link) => launchURL(link.url),
+              text: postText,
+              options: LinkifyOptions(humanize: false))
+        ];
+    } else {
+      return [
+        Linkify(
+            onOpen: (link) => launchURL(link.url),
+            text: postText,
+            options: LinkifyOptions(humanize: false))
+      ];
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(8, 0, 8, 8),
+        child: postText != null
+            ? Align(
+                alignment: Alignment.topLeft,
+                child: Column(
+                  children: showText(),
+                ),
+              )
+            : Text(""),
+      ),
+    );
+  }
+}
+
+class BuildPhotoLink extends StatelessWidget {
+  BuildPhotoLink(this.attachments);
+
+  final List<Attachment> attachments;
+
+  @override
+  Widget build(BuildContext context) {
+    String linkPic;
+    String linkUrl;
+    String linkTitle;
+
+    bool exists = false;
+
+    attachments.forEach((element) {
+      if (element.type == "link") {
+        linkTitle = element.content["title"];
+        linkUrl = element.content["url"];
+
+        if (element.content["photo"] != null && element.content["photo"] != "")
+          linkPic = element.content["photo"]["sizes"][0]["url"];
+
+        exists = true;
+      }
+    });
+
+    if (!exists) return Text("");
+
+    return InkWell(
+      onTap: () {
+        launchURL(linkUrl);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(9.0),
+            border: Border.all(color: Colors.grey, width: 0.5)),
+        child: Column(children: [
+          Row(
+            children: [
+              Expanded(
+                flex: 1,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(6.0), bottom: Radius.zero),
+                  child: Image.network(
+                    linkPic,
+                    fit: BoxFit.fitHeight,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Expanded(
+                  child: ListTile(
+                title: Text(linkTitle),
+                subtitle: Text(linkUrl),
+              )),
+            ],
+          ),
+        ]),
+      ),
+    );
+  }
+}
+
+class BuildGif extends StatefulWidget {
+  final String gifUrl;
+  final String gifPreview;
+
+  const BuildGif({Key key, this.gifUrl, this.gifPreview}) : super(key: key);
+
+  @override
+  _BuildGifState createState() => _BuildGifState();
+}
+
+class _BuildGifState extends State<BuildGif> {
+  bool showFull = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () => setState(() => showFull = !showFull),
+      child: showFull
+          ? Image.network(
+              widget.gifUrl,
+              fit: BoxFit.cover,
+              loadingBuilder: (BuildContext context, Widget child,
+                  ImageChunkEvent loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Center(
+                  child: CircularProgressIndicator(
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes
+                        : null,
+                  ),
+                );
+              },
+            )
+          : Container(
+              child: Column(
+                children: [
+                  Image.network(widget.gifPreview),
+                  FlatButton(onPressed: null, child: Text("GIF"))
+                ],
+              ),
+            ),
+    );
+  }
+}
+
+class VideoP extends StatefulWidget {
+  final String token;
+  final String vkV;
+  final String videoId;
+  final String videoOwner;
+
+  const VideoP({Key key, this.videoId, this.videoOwner, this.token, this.vkV})
+      : super(key: key);
+
+  @override
+  _VideoPState createState() => _VideoPState();
+}
+
+class _VideoPState extends State<VideoP> {
+  String player;
+  @override
+  void initState() {
+    super.initState();
+    getPlayer();
+  }
+
+  void getPlayer() async {
+    var url = "https://api.vk.com/method/video.get?videos=" +
+        widget.videoOwner +
+        "_" +
+        widget.videoId +
+        "&access_token=" +
+        widget.token +
+        "&v=" +
+        widget.vkV;
+
+    var response = await http.get(url);
+    Map<String, dynamic> js = await jsonDecode(response.body);
+
+    if (js.containsKey("error")) {
+      throw Exception(js["error"]);
+    } else {
+      js = js["response"];
+
+      player = js["items"][0]["player"];
+      setState(() {});
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return player != null
+        ? Videop(
+            videoUrl: player,
+          )
+        : Text("");
+  }
+}
+
+launchURL(String url) async {
+  if (await canLaunch(url)) {
+    await launch(url);
   }
 }
