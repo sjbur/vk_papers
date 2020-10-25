@@ -136,7 +136,7 @@ class _SettingsViewState extends State<SettingsView> {
                         Token.clearToken();
 
                         await Navigator.of(context)
-                            .push(GoTo(SettingsScreen(), left: true));
+                            .push(GoTo(LoginScreen(), left: true));
                       },
                       color: Colors.blue,
                       textColor: Colors.white,
