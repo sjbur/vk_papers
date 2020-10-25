@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:vk_papers/VK%20api/Newsfeed.dart';
+import 'package:vk_papers/screens/FullscreenImage.dart';
+import 'package:vk_papers/widgets/Poll.dart';
 import 'package:vk_papers/widgets/VideoPlay.dart';
 
 class PostCard extends StatefulWidget {
@@ -24,8 +26,9 @@ class PostCard extends StatefulWidget {
 
   final List<Attachment> attachments;
 
-  PostCard(this.context,
-      {this.groupName,
+  PostCard(
+      this.context,
+      this.groupName,
       this.avatarUrl,
       this.timeAgo,
       this.postText,
@@ -35,7 +38,7 @@ class PostCard extends StatefulWidget {
       this.reposts,
       this.views,
       this.accessToken,
-      this.vkVersion});
+      this.vkVersion);
 
   @override
   _PostCardState createState() => _PostCardState(this.context,
@@ -78,6 +81,8 @@ class _PostCardState extends State<PostCard> {
 
     if (diff.inMinutes > 60)
       timeAgo = diff.inHours.toString() + " ч. назад";
+    else if (diff.inMinutes == 0)
+      timeAgo = "сейчас";
     else
       timeAgo = diff.inMinutes.toString() + " мин. назад";
   }
@@ -104,22 +109,41 @@ class _PostCardState extends State<PostCard> {
           BuildPhotoLink(attachments),
           buildDocumentsAttachments(),
           buildVideos(),
+          buildPoll(),
           postStatistics(),
         ],
       ),
     );
   }
 
-  Row buildPhotoAttachments() {
+  Widget buildPhotoAttachments() {
     List<Widget> photos = new List<Widget>();
 
     if (attachments != null) {
       attachments.forEach((attachment) {
         if (attachment.type == "photo") {
           List sizes = attachment.content["sizes"];
-          photos.add(Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Image.network(sizes[0]["url"]),
+          String thumbnail;
+          if (sizes.length > 3)
+            thumbnail = sizes[2]["url"];
+          else
+            thumbnail = sizes[0]["url"];
+
+          photos.add(GestureDetector(
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) {
+                return FullscreenImage(
+                  imageUrl: sizes[sizes.length - 1]["url"],
+                );
+              }));
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: Image.network(
+                thumbnail,
+                fit: BoxFit.fill,
+              ),
+            ),
           ));
         }
       });
@@ -147,6 +171,8 @@ class _PostCardState extends State<PostCard> {
 
       i++;
     });
+
+    if (photos.length == 1) return res[0];
 
     if (photos != null) {
       return Row(
@@ -179,12 +205,16 @@ class _PostCardState extends State<PostCard> {
 
   Row postStatistics() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
-              IconButton(icon: Icon(Icons.favorite), onPressed: null),
+              IconButton(
+                  icon: Icon(Icons.favorite),
+                  onPressed: null,
+                  padding: EdgeInsets.all(0)),
               if (likes != null && likes != "0") Text(likes) else Text("")
             ],
           ),
@@ -192,7 +222,11 @@ class _PostCardState extends State<PostCard> {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(children: [
-            IconButton(icon: Icon(Icons.comment), onPressed: null),
+            IconButton(
+              icon: Icon(Icons.comment),
+              onPressed: null,
+              padding: EdgeInsets.all(0),
+            ),
             if (comments != null && comments != "0")
               Text(comments)
             else
@@ -203,7 +237,11 @@ class _PostCardState extends State<PostCard> {
           padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
-              IconButton(icon: Icon(Icons.share), onPressed: null),
+              IconButton(
+                icon: Icon(Icons.share),
+                onPressed: null,
+                padding: EdgeInsets.all(0),
+              ),
               if (reposts != null && reposts != "0") Text(reposts) else Text("")
             ],
           ),
@@ -212,7 +250,11 @@ class _PostCardState extends State<PostCard> {
           padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
-              IconButton(icon: Icon(Icons.portrait), onPressed: null),
+              IconButton(
+                icon: Icon(Icons.portrait),
+                onPressed: null,
+                padding: EdgeInsets.all(0),
+              ),
               if (views != null && views != "0") Text(views) else Text("")
             ],
           ),
@@ -250,6 +292,28 @@ class _PostCardState extends State<PostCard> {
             vkV: widget.vkVersion,
             videoId: attachment.content["id"].toString(),
             videoOwner: attachment.content["owner_id"].toString(),
+          ));
+        }
+      });
+    }
+
+    return Column(
+      children: res,
+    );
+  }
+
+  Widget buildPoll() {
+    List<Widget> res = new List<Widget>();
+
+    if (attachments != null) {
+      attachments.forEach((attachment) {
+        if (attachment.type == "poll") {
+          res.add(Poll(
+            vkToken: widget.accessToken,
+            vkVersion: widget.vkVersion,
+            pollID: attachment.content["id"].toString(),
+            ownerID: attachment.content["owner_id"].toString(),
+            ownerName: widget.groupName,
           ));
         }
       });
@@ -489,7 +553,8 @@ class _VideoPState extends State<VideoP> {
       js = js["response"];
 
       player = js["items"][0]["player"];
-      setState(() {});
+
+      if (this.mounted) setState(() {});
     }
   }
 

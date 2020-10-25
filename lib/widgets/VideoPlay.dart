@@ -15,7 +15,6 @@ class _VideopState extends State<Videop> {
 
   @override
   void initState() {
-    print(widget.videoUrl);
     super.initState();
     _controller = VideoPlayerController.network(
       widget.videoUrl,

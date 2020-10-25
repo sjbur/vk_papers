@@ -15,3 +15,7 @@ Future<String> getToken() async {
 Future<void> saveToken(String value) async {
   _storage.write(key: "token", value: value);
 }
+
+Future<void> clearToken() async {
+  _storage.deleteAll();
+}

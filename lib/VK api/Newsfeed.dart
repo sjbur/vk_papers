@@ -11,6 +11,8 @@ class Attachment {
 }
 
 class VKNewsfeed {
+  String startFrom;
+
   Future<List<Post>> getNews(String req) async {
     var url = "https://api.vk.com/method/newsfeed.get" +
         req +
@@ -24,10 +26,10 @@ class VKNewsfeed {
 
     if (js.containsKey("error")) {
       print("Error");
-      return null;
-      //throw Exception(js["error"]);
+      throw Exception(js["error"]);
     } else {
       js = js["response"];
+      startFrom = js["next_from"];
 
       List items = js["items"];
       List<Post> postCollection = new List<Post>();
@@ -66,6 +68,7 @@ class VKNewsfeed {
         _properties.putIfAbsent("ownerName", () => groupName);
         _properties.putIfAbsent("ownerAvatar", () => groupAvatar);
         _properties.putIfAbsent("postDate", () => postDate);
+        _properties.putIfAbsent("postUnixDate", () => timestamp.toString());
         _properties.putIfAbsent("isAd", () => isAd);
         _properties.putIfAbsent("text", () => text);
         _properties.putIfAbsent("likes", () => likes);

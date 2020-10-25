@@ -41,8 +41,8 @@ class _PollState extends State<Poll> {
   String question;
   bool anonym;
 
-  List<String> selectedAnswers = new List<String>();
-  List totalAnswers = new List();
+  List<String> selectedAnswers;
+  List totalAnswers;
 
   @override
   void initState() {
@@ -50,11 +50,10 @@ class _PollState extends State<Poll> {
     init();
   }
 
-  refresh() {
-    setState(() {});
-  }
-
   init() async {
+    selectedAnswers = new List<String>();
+    totalAnswers = new List();
+
     // loading poll's text
     var pollDetails = await getMapFromUrl(
         "polls.getById?owner_id=" +
@@ -73,19 +72,22 @@ class _PollState extends State<Poll> {
     selAns.forEach((element) {
       selectedAnswers.add(element.toString());
     });
-    //selectedAnswers = new List<String>.from(pollDetails["answer_ids"]);
+    selAns.clear();
 
-    print(selectedAnswers);
-
-    setState(() {});
+    if (this.mounted) setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    if (anonym == null) {
-      return Container();
-    } else {
+    if (anonym != null) {
       return Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.grey.shade100,
+              width: 2,
+            ),
+            borderRadius: BorderRadius.circular(6),
+          ),
           child: Padding(
               padding: const EdgeInsets.all(14.0),
               child: Column(children: [
@@ -113,6 +115,8 @@ class _PollState extends State<Poll> {
                 )
               ])));
     }
+
+    return Text("");
   }
 
   List<Widget> buildVoteButtons() {
@@ -151,20 +155,15 @@ class _PollState extends State<Poll> {
       if (!selectedAnswers.contains(ans))
         await voteFor(ans);
       else
-        await unvoteAll(ans);
+        await unvoteAll();
     } else {
-      await unvoteAll(ans);
+      await unvoteAll();
     }
-
-    selectedAnswers.clear();
-    await init();
-
-    setState(() {});
   }
 
   Future<void> voteFor(String ans) async {
-    print("voteFor");
-    await getMapFromUrl(
+    print("voteFor - " + ans);
+    int resp = await getMapFromUrl(
         "polls.addVote?owner_id=" +
             widget.ownerID +
             "&poll_id=" +
@@ -174,14 +173,12 @@ class _PollState extends State<Poll> {
         widget.vkToken,
         widget.vkVersion);
 
-    setState(() {});
+    if (resp == 1) setState(() => selectedAnswers.add(ans));
   }
 
-  Future<void> unvoteAll(String ans) async {
-    print("unvote");
-
+  Future<void> unvoteAll() async {
     selectedAnswers.forEach((element) async {
-      await getMapFromUrl(
+      int resp = await getMapFromUrl(
           "polls.deleteVote?owner_id=" +
               widget.ownerID +
               "&poll_id=" +
@@ -190,10 +187,8 @@ class _PollState extends State<Poll> {
               element,
           widget.vkToken,
           widget.vkVersion);
+
+      if (resp == 1) setState(() => selectedAnswers.remove(element));
     });
-
-    selectedAnswers.clear();
-
-    setState(() {});
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:vk_papers/VK%20api/User.dart';
 
 import 'Groups.dart';
 import 'Newsfeed.dart';
@@ -8,6 +9,7 @@ class VKController {
 
   VKGroups groups;
   VKNewsfeed newsfeed;
+  VKUser user;
 
   bool inited = false;
 
@@ -20,6 +22,7 @@ class VKController {
   Future<void> init() async {
     groups = new VKGroups(vkVersion, await getToken());
     newsfeed = new VKNewsfeed();
+    user = new VKUser();
     await groups.init();
 
     inited = true;

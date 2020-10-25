@@ -53,3 +53,8 @@ Future saveTimers(List<String> ls) async {
 
   //print(await file.readAsString());
 }
+
+Future clearCategories() async {
+  final file = await getCategoriesFile();
+  file.delete();
+}

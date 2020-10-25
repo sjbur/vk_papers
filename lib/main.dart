@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:vk_papers/screens/LoginScreen.dart';
-// import 'package:vk_papers/screens/NewsScreen2.dart';
-import 'package:vk_papers/screens/TESTpoll.dart';
+// import 'package:vk_papers/screens/NewsScreen.dart';
+import 'package:vk_papers/screens/TestNewsScreen.dart';
 
 import 'functions/Token.dart' as Token;
 
@@ -19,7 +19,8 @@ void checkLogin() async {
     print("logged in");
     print(token);
 
-    runApp(MaterialApp(home: TESTpoll(), debugShowCheckedModeBanner: false));
+    runApp(
+        MaterialApp(home: TestNewsScreen(), debugShowCheckedModeBanner: false));
   } else {
     print("no token");
     runApp(MaterialApp(home: LoginScreen(), debugShowCheckedModeBanner: false));

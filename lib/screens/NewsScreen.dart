@@ -13,17 +13,8 @@ class NewsScreeen extends StatefulWidget {
 }
 
 class _NewsScreeenState extends State<NewsScreeen> {
-  // VideoPlayerController _controller;
-  // Future<void> _initializeVideoPlayerFuture;
-
   @override
   void initState() {
-    // _controller = VideoPlayerController.network(
-    //   'https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4?_=1',
-    // );
-
-    // _initializeVideoPlayerFuture = _controller.initialize();
-
     super.initState();
     aue();
   }
@@ -38,13 +29,10 @@ class _NewsScreeenState extends State<NewsScreeen> {
         appBar: AppBar(
           title: Text("Новости"),
         ),
-        //body: buildPost("", "groupName", "text", "timeAgo", "", "", "", "1")
         body: r
             ? new ListView.builder(
                 itemCount: posts.length,
                 itemBuilder: (BuildContext ctxt, int index) {
-                  print(index);
-                  //print(posts.length);
                   return buildPost(
                       posts[index].properties["ownerAvatar"],
                       posts[index].properties["ownerName"],
@@ -55,44 +43,7 @@ class _NewsScreeenState extends State<NewsScreeen> {
                       posts[index].properties["reposts"],
                       posts[index].properties["views"]);
                 })
-            : Text("")
-
-        // body: FutureBuilder(
-        //   future: _initializeVideoPlayerFuture,
-        //   builder: (context, snapshot) {
-        //     if (snapshot.connectionState == ConnectionState.done) {
-        //       return AspectRatio(
-        //         aspectRatio: _controller.value.aspectRatio,
-        //         // Use the VideoPlayer widget to display the video.
-        //         child: VideoPlayer(_controller),
-        //       );
-        //     } else {
-        //       // If the VideoPlayerController is still initializing, show a
-        //       // loading spinner.
-        //       return Center(child: CircularProgressIndicator());
-        //     }
-        //   },
-        // ),
-        // floatingActionButton: FloatingActionButton(
-        //   onPressed: () {
-        //     // Wrap the play or pause in a call to `setState`. This ensures the
-        //     // correct icon is shown.
-        //     setState(() {
-        //       // If the video is playing, pause it.
-        //       if (_controller.value.isPlaying) {
-        //         _controller.pause();
-        //       } else {
-        //         // If the video is paused, play it.
-        //         _controller.play();
-        //       }
-        //     });
-        //   },
-        //   // Display the correct icon depending on the state of the player.
-        //   child: Icon(
-        //     _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
-        //   ),
-        // ), // This trailing comma makes auto-formatting nicer for build methods.
-        );
+            : Text(""));
   }
 
   launchURL(String url) async {
