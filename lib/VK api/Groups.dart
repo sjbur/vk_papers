@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:http/http.dart' as http;
 
-import '../functions/LocalData.dart' as LocalData;
+import '../functions/Categories.dart' as LocalData;
 
 class Group {
   String name;

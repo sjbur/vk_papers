@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:vk_papers/functions/LocalData.dart';
+import 'package:vk_papers/functions/Timers.dart';
 import 'package:vk_papers/functions/swipe.dart';
 import 'package:vk_papers/screens/FinishScreen.dart';
 import 'package:vk_papers/screens/ShowGroupsScreen.dart';
@@ -46,12 +46,12 @@ class _SetTimersScreenState extends State<SetTimersScreen> {
     var iosChannel = IOSNotificationDetails();
     var platformChannel = NotificationDetails(androidChannel, iosChannel);
 
-    List<String> savedTimers = await loadTimers();
+    List<Timer> savedTimers = await getAllTimers();
 
     await fltrNotification.cancelAll();
 
     savedTimers.forEach((element) {
-      String textTime = element;
+      String textTime = element.time;
       textTime = textTime.trim();
 
       Time time = Time(int.parse(textTime.split(":")[0].toString()),
@@ -141,7 +141,7 @@ class _SetTimersScreenState extends State<SetTimersScreen> {
                       textColor: Colors.white,
                       child: Text("Сохранить"),
                       onPressed: () async {
-                        await saveTimers(timers);
+                        await saveTimers(timers, null);
                         await makeNotifications(
                             "VK Papers", "Новые новости уже пришли!");
                         await Navigator.of(context)

@@ -29,7 +29,8 @@ class _FullscreenImageState extends State<FullscreenImage> {
         color: Colors.black,
         child: GestureDetector(
           child: Center(
-            child: Image.network(widget.imageUrl),
+            child: FadeInImage.assetNetwork(
+                placeholder: "assets/temp.png", image: widget.imageUrl),
           ),
           onTap: () {
             Navigator.pop(context);

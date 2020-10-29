@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vk_papers/screens/SetTimersScreen.dart';
 
 import '../VK%20api/VKController.dart';
 import '../functions/FadeAnimation.dart';
@@ -238,7 +239,12 @@ class _SetCategoriesScreenState extends State<SetCategoriesScreen>
                                 "Ошибка!",
                                 "Вам нужно добавить в избранное хотя бы одну категорию новостей.",
                                 context);
-                          } else {}
+                          } else {
+                            //todo save cats
+                            Navigator.of(context).push(GoTo(
+                              SetTimersScreen(),
+                            ));
+                          }
                         }),
                   ),
                 )

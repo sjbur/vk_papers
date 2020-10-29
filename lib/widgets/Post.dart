@@ -95,8 +95,10 @@ class _PostCardState extends State<PostCard> {
           ListTile(
             leading: Container(
                 decoration: BoxDecoration(shape: BoxShape.circle),
-                child: CircleAvatar(
-                  backgroundImage: NetworkImage(avatarUrl),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(50.0),
+                  child: FadeInImage.assetNetwork(
+                      placeholder: "assets/temp.png", image: avatarUrl),
                 )),
             title: Text(groupName),
             subtitle: Text(timeAgo),
@@ -440,15 +442,17 @@ class BuildPhotoLink extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                flex: 1,
+                //flex: 1,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(6.0), bottom: Radius.zero),
-                  child: Image.network(
-                    linkPic,
-                    fit: BoxFit.fitHeight,
-                  ),
-                ),
+                    borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(6.0), bottom: Radius.zero),
+                    child: linkPic != null
+                        ? FadeInImage.assetNetwork(
+                            placeholder: "assets/temp.png",
+                            image: linkPic,
+                            fit: BoxFit.cover,
+                          )
+                        : Text("")),
               ),
             ],
           ),

@@ -5,9 +5,15 @@ import 'package:vk_papers/widgets/Post.dart';
 import 'package:vk_papers/functions/swipe.dart';
 import 'package:vk_papers/screens/SettingsScreen.dart';
 
+import 'package:vk_papers/functions/Timers.dart';
+
 import 'LoginScreen.dart';
 
 class TestNewsScreen extends StatefulWidget {
+  final String title;
+  final String sources;
+
+  const TestNewsScreen({Key key, this.sources, this.title}) : super(key: key);
   @override
   _TestNewsScreenState createState() => _TestNewsScreenState();
 }
@@ -19,15 +25,23 @@ class _TestNewsScreenState extends State<TestNewsScreen> {
 
   ScrollController scroll;
 
-  Future<void> load({String date}) async {
+  Future<void> load() async {
     await vk.init();
     vkToken = await vk.getToken();
 
-    if (date == null)
-      posts = await vk.newsfeed.getNews("?count=20&filters=post");
-    else
-      posts = await vk.newsfeed
-          .getNews("?count=20&filters=post&start_time=" + date);
+    var accessedT = await getLastAccessedTimer();
+    accessedT.time.trim();
+    int h = int.parse(accessedT.time.split(":")[0]);
+    int m = int.parse(accessedT.time.split(":")[1]);
+    var curDate = new DateTime(accessedT.accessedDate.year,
+        accessedT.accessedDate.month, accessedT.accessedDate.day, h, m);
+
+    posts = await vk.newsfeed.getNews("?count=20&filters=post&source_ids=" +
+        widget.sources +
+        "&end_time=" +
+        (curDate.microsecondsSinceEpoch / 1000).toString());
+
+    print(widget.sources);
 
     // make check in vk class
     if (posts == null)
@@ -55,7 +69,10 @@ class _TestNewsScreenState extends State<TestNewsScreen> {
         isRefreshing = true;
 
         List<Post> newPosts = await vk.newsfeed.getNews(
-            "?count=20&filters=post&start_from=" + vk.newsfeed.startFrom);
+            "?count=20&filters=post&start_from=" +
+                vk.newsfeed.startFrom +
+                "&source_ids=" +
+                widget.sources);
 
         setState(() {
           posts.addAll(newPosts);
@@ -67,49 +84,111 @@ class _TestNewsScreenState extends State<TestNewsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (posts != null) {
-      return Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.grid_on),
-            onPressed: () {},
-          ),
-          actions: [
-            IconButton(
-                icon: Icon(
-                  Icons.settings,
-                  color: Colors.white,
-                ),
-                onPressed: () async {
-                  await Navigator.of(context).push(GoTo(SettingsScreen()));
-                })
-          ],
-          title: Text("Новости"),
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.grid_on),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
-        body: RefreshIndicator(
-          onRefresh: load,
-          child: ListView.builder(
-              shrinkWrap: true,
-              controller: scroll,
-              itemCount: posts.length,
-              itemBuilder: (BuildContext ctxt, int index) {
-                return PostCard(
-                    ctxt,
-                    posts[index].properties["ownerName"],
-                    posts[index].properties["ownerAvatar"],
-                    posts[index].properties["postDate"],
-                    posts[index].properties["text"],
-                    posts[index].attachments,
-                    posts[index].properties["likes"],
-                    posts[index].properties["comments"],
-                    posts[index].properties["reposts"],
-                    posts[index].properties["views"],
-                    vkToken,
-                    vk.vkVersion);
-              }),
-        ),
+        actions: [
+          IconButton(
+              icon: Icon(
+                Icons.settings,
+                color: Colors.white,
+              ),
+              onPressed: () async {
+                await Navigator.of(context).push(GoTo(SettingsScreen()));
+              })
+        ],
+        title: Text(widget.title),
+      ),
+      body: posts != null
+          ? BuildPostCard(
+              scroll: scroll, posts: posts, vkToken: vkToken, vk: vk)
+          : Center(child: CircularProgressIndicator()),
+    );
+  }
+}
+
+class BuildPostCard extends StatefulWidget {
+  const BuildPostCard({
+    Key key,
+    @required this.scroll,
+    @required this.posts,
+    @required this.vkToken,
+    @required this.vk,
+  }) : super(key: key);
+
+  final ScrollController scroll;
+  final List<Post> posts;
+  final String vkToken;
+  final VKController vk;
+
+  @override
+  _BuildPostCardState createState() => _BuildPostCardState();
+}
+
+class _BuildPostCardState extends State<BuildPostCard>
+    with TickerProviderStateMixin {
+  AnimationController _controller;
+
+  Animation<double> _animation;
+
+  initState() {
+    super.initState();
+
+    _controller = AnimationController(
+        duration: const Duration(milliseconds: 1000),
+        vsync: this,
+        value: 0,
+        lowerBound: 0,
+        upperBound: 1);
+    _animation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
+
+    _controller.forward();
+  }
+
+  @override
+  dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.posts.length == 0) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Center(child: Text("Пусто. Здесь ничего нет! ")),
+          Center(child: Text("Во всяком случае, пока что."))
+        ],
       );
     }
-    return Text("");
+    return ListView.builder(
+        shrinkWrap: true,
+        controller: widget.scroll,
+        itemCount: widget.posts.length,
+        itemBuilder: (BuildContext ctxt, int index) {
+          return FadeTransition(
+            opacity: _animation,
+            child: PostCard(
+                ctxt,
+                widget.posts[index].properties["ownerName"],
+                widget.posts[index].properties["ownerAvatar"],
+                widget.posts[index].properties["postDate"],
+                widget.posts[index].properties["text"],
+                widget.posts[index].attachments,
+                widget.posts[index].properties["likes"],
+                widget.posts[index].properties["comments"],
+                widget.posts[index].properties["reposts"],
+                widget.posts[index].properties["views"],
+                widget.vkToken,
+                widget.vk.vkVersion),
+          );
+        });
   }
 }

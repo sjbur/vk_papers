@@ -48,7 +48,12 @@ class _VideopState extends State<Videop> {
                   VideoPlayer(_controller),
                   ClosedCaption(text: _controller.value.caption.text),
                   _ControlsOverlay(controller: _controller),
-                  VideoProgressIndicator(_controller, allowScrubbing: true),
+                  VideoProgressIndicator(_controller,
+                      allowScrubbing: true,
+                      colors: VideoProgressColors(
+                          bufferedColor: Colors.lightBlue,
+                          backgroundColor: Colors.grey.shade200,
+                          playedColor: Colors.lightBlue.shade100)),
                 ],
               ),
             ),

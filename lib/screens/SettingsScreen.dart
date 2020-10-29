@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:vk_papers/VK api/VKController.dart';
-import 'package:vk_papers/functions/LocalData.dart';
+import 'package:vk_papers/functions/Categories.dart';
 import 'package:vk_papers/functions/swipe.dart';
+import 'package:vk_papers/screens/SetTimersScreen.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import 'LoginScreen.dart';
@@ -106,7 +107,9 @@ class _SettingsViewState extends State<SettingsView> {
                     ),
                     FlatButton(
                       child: Text("Настроить напоминания"),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).push(GoTo(SetTimersScreen()));
+                      },
                       color: Colors.blue,
                       textColor: Colors.white,
                     ),
