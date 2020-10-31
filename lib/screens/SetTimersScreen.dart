@@ -7,7 +7,6 @@ import '../functions/Timers.dart';
 import '../functions/swipe.dart';
 
 import 'FinishScreen.dart';
-import 'ShowGroupsScreen.dart';
 
 class SetTimersScreen extends StatefulWidget {
   final bool firstTime;
