@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:vk_papers/VK%20api/VKController.dart';
-import 'package:vk_papers/functions/swipe.dart';
-import 'package:vk_papers/screens/SettingsScreen.dart';
-// import 'package:vk_papers/screens/ShowGroupsScreen.dart';
-import 'package:vk_papers/screens/TestNewsScreen.dart';
+
+import '../VK%20api/VKController.dart';
+import '../functions/swipe.dart';
+
+import 'SettingsScreen.dart';
+import 'TestNewsScreen.dart';
 
 class ShowCategoriesScreen extends StatefulWidget {
   @override

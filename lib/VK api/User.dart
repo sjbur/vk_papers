@@ -5,11 +5,12 @@ import 'VKController.dart';
 
 class VKUser {
   Future<String> getProfilePic_100() async {
-    var url = "https://api.vk.com/method/users.get?fields=photo_100&" +
-        "&access_token=" +
-        await VKController().getToken() +
-        "&v=" +
-        VKController().vkVersion;
+    var url =
+        "https://api.vk.com/method/users.get?fields=photo_100,photo_200&" +
+            "&access_token=" +
+            await VKController().getToken() +
+            "&v=" +
+            VKController().vkVersion;
 
     var response = await http.get(url);
     Map<String, dynamic> js = await jsonDecode(response.body);
@@ -19,7 +20,11 @@ class VKUser {
     } else {
       js = js["response"][0];
 
-      return js["photo_100"];
+      if (js["photo_200"] != null) return js["photo_200"];
+
+      if (js["photo_100"] != null) return js["photo_100"];
+
+      return null;
     }
   }
 

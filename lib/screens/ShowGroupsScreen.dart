@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'SetCategoriesScreen.dart';
 import '../VK%20api/Groups.dart';
 import '../functions/swipe.dart';
+
+import 'SetCategoriesScreen.dart';
 
 String _selection;
 

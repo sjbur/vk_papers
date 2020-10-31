@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import 'package:vk_papers/functions/Timers.dart';
 import 'package:vk_papers/functions/swipe.dart';
-import 'package:vk_papers/screens/SetTimersScreen.dart';
-import 'package:vk_papers/screens/ShowCategoriesScreen.dart';
-import 'package:vk_papers/screens/TestNewsScreen.dart';
 
+import 'SetTimersScreen.dart';
+import 'ShowCategoriesScreen.dart';
 import 'SettingsScreen.dart';
 
 class WaitForNewsScreen extends StatefulWidget {
@@ -75,7 +75,9 @@ class _WaitForNewsScreenState extends State<WaitForNewsScreen>
   checkNews() async {
     bool timersOK = await timersExist();
     if (!timersOK) {
-      await Navigator.of(context).pushReplacement(GoTo(SetTimersScreen()));
+      await Navigator.of(context).pushReplacement(GoTo(SetTimersScreen(
+        firstTime: false,
+      )));
     } else {
       ready = await getTimerToAccess() != null ? true : false;
       setState(() {});

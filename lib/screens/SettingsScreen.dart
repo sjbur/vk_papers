@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:vk_papers/VK api/VKController.dart';
-import 'package:vk_papers/functions/Categories.dart';
-import 'package:vk_papers/functions/swipe.dart';
-import 'package:vk_papers/screens/SetTimersScreen.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+import '../VK api/VKController.dart';
+import '../functions/swipe.dart';
+import '../functions/Token.dart' as Token;
+
 import 'LoginScreen.dart';
-import 'package:vk_papers/functions/Token.dart' as Token;
+import 'SetTimersScreen.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -34,7 +34,7 @@ class SettingsView extends StatefulWidget {
 class _SettingsViewState extends State<SettingsView> {
   VKController vk = new VKController();
   String username = "";
-  String avatar = "";
+  String avatar;
 
   void onLoad(BuildContext context) async {
     await vk.init();
@@ -74,78 +74,81 @@ class _SettingsViewState extends State<SettingsView> {
                       style: TextStyle(
                           fontSize: 30.0, fontWeight: FontWeight.bold)),
                 ),
-                Container(
-                  margin: EdgeInsets.fromLTRB(0, 0, 0, 20.0),
-                  width: 128,
-                  height: 128,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                        image: avatar == ""
-                            ? AssetImage("assets/temp.png")
-                            : NetworkImage(avatar),
-                        fit: BoxFit.cover),
-                  ),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(128),
+                  child: FadeInImage(
+                      fit: BoxFit.fill,
+                      width: 128,
+                      height: 128,
+                      placeholder: AssetImage("assets/temp.png"),
+                      image: avatar == null
+                          ? AssetImage("assets/temp.png")
+                          : NetworkImage(avatar)),
                 ),
-                Container(
-                    child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // FlatButton(
-                    //   child: Text("Редактировать избранные списки"),
-                    //   onPressed: () {},
-                    //   color: Colors.blue,
-                    //   textColor: Colors.white,
-                    // ),
-                    // FlatButton(
-                    //   child: Text("Сбросить списки"),
-                    //   onPressed: () async {
-                    //     await clearCategories();
-                    //   },
-                    //   color: Colors.blue,
-                    //   textColor: Colors.white,
-                    // ),
-                    FlatButton(
-                      child: Text("Настроить напоминания"),
-                      onPressed: () {
-                        Navigator.of(context).push(GoTo(SetTimersScreen()));
-                      },
-                      color: Colors.blue,
-                      textColor: Colors.white,
-                    ),
-                    // FlatButton(
-                    //   child: Text("Настройка оформления"),
-                    //   onPressed: () {},
-                    //   color: Colors.blue,
-                    //   textColor: Colors.white,
-                    // ),
-                    // FlatButton(
-                    //   child: Text("Связаться с разработчиком"),
-                    //   onPressed: () {},
-                    //   color: Colors.blue,
-                    //   textColor: Colors.white,
-                    // ),
-                    // FlatButton(
-                    //   child: Text("Сделать отзыв"),
-                    //   onPressed: () {},
-                    //   color: Colors.blue,
-                    //   textColor: Colors.white,
-                    // ),
-                    FlatButton(
-                      child: Text("Выйти из аккаунта"),
-                      onPressed: () async {
-                        CookieManager cookie = new CookieManager();
-                        cookie.clearCookies();
-                        Token.clearToken();
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8.0, 15.0, 8.0, 0),
+                  child: Container(
+                      child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // FlatButton(
+                      //   child: Text("Редактировать избранные списки"),
+                      //   onPressed: () {},
+                      //   color: Colors.blue,
+                      //   textColor: Colors.white,
+                      // ),
+                      // FlatButton(
+                      //   child: Text("Сбросить списки"),
+                      //   onPressed: () async {
+                      //     await clearCategories();
+                      //   },
+                      //   color: Colors.blue,
+                      //   textColor: Colors.white,
+                      // ),
+                      FlatButton(
+                        child: Text("Настроить напоминания"),
+                        onPressed: () {
+                          Navigator.of(context).push(GoTo(SetTimersScreen(
+                            firstTime: false,
+                          )));
+                        },
+                        color: Colors.blue,
+                        textColor: Colors.white,
+                      ),
+                      // FlatButton(
+                      //   child: Text("Настройка оформления"),
+                      //   onPressed: () {},
+                      //   color: Colors.blue,
+                      //   textColor: Colors.white,
+                      // ),
+                      // FlatButton(
+                      //   child: Text("Связаться с разработчиком"),
+                      //   onPressed: () {},
+                      //   color: Colors.blue,
+                      //   textColor: Colors.white,
+                      // ),
+                      // FlatButton(
+                      //   child: Text("Сделать отзыв"),
+                      //   onPressed: () {},
+                      //   color: Colors.blue,
+                      //   textColor: Colors.white,
+                      // ),
+                      FlatButton(
+                        child: Text("Выйти из аккаунта"),
+                        onPressed: () async {
+                          CookieManager cookie = new CookieManager();
+                          cookie.clearCookies();
+                          Token.clearToken();
 
-                        await Navigator.of(context)
-                            .push(GoTo(LoginScreen(), left: true));
-                      },
-                      color: Colors.blue,
-                      textColor: Colors.white,
-                    ),
-                  ],
-                ))
+                          await Navigator.of(context)
+                              .push(GoTo(LoginScreen(), left: true));
+                        },
+                        color: Colors.blue,
+                        textColor: Colors.white,
+                      ),
+                    ],
+                  )),
+                )
               ]))),
     );
   }

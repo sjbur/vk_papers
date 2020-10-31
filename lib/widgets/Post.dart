@@ -447,7 +447,9 @@ class BuildPhotoLink extends StatelessWidget {
         linkUrl = element.content["url"];
 
         if (element.content["photo"] != null && element.content["photo"] != "")
-          linkPic = element.content["photo"]["sizes"][0]["url"];
+          element.content["photo"]["sizes"][1] == null
+              ? linkPic = element.content["photo"]["sizes"][0]["url"]
+              : linkPic = element.content["photo"]["sizes"][1]["url"];
 
         exists = true;
       }
@@ -472,10 +474,9 @@ class BuildPhotoLink extends StatelessWidget {
                     borderRadius: BorderRadius.vertical(
                         top: Radius.circular(6.0), bottom: Radius.zero),
                     child: linkPic != null
-                        ? FadeInImage.assetNetwork(
-                            placeholder: "assets/temp.png",
-                            image: linkPic,
-                            fit: BoxFit.cover,
+                        ? Image.network(
+                            linkPic,
+                            fit: BoxFit.fitWidth,
                           )
                         : Text("")),
               ),

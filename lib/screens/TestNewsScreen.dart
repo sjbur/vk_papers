@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+
 import 'package:vk_papers/VK%20api/Newsfeed.dart';
 import 'package:vk_papers/VK%20api/VKController.dart';
 import 'package:vk_papers/widgets/Post.dart';
 import 'package:vk_papers/functions/swipe.dart';
-import 'package:vk_papers/screens/SettingsScreen.dart';
-
 import 'package:vk_papers/functions/Timers.dart';
 
+import 'SettingsScreen.dart';
 import 'LoginScreen.dart';
 
 class TestNewsScreen extends StatefulWidget {

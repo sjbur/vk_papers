@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:vk_papers/screens/SetTimersScreen.dart';
 
 import '../VK%20api/VKController.dart';
 import '../functions/FadeAnimation.dart';
-import 'ShowGroupsScreen.dart';
 import '../functions/swipe.dart';
 import '../functions/Alerts.dart' as Alerts;
+
+import 'ShowGroupsScreen.dart';
+import 'SetTimersScreen.dart';
 
 class SetCategoriesScreen extends StatefulWidget {
   @override
@@ -242,7 +243,9 @@ class _SetCategoriesScreenState extends State<SetCategoriesScreen>
                           } else {
                             //todo save cats
                             Navigator.of(context).push(GoTo(
-                              SetTimersScreen(),
+                              SetTimersScreen(
+                                firstTime: true,
+                              ),
                             ));
                           }
                         }),

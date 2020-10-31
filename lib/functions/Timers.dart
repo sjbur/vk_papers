@@ -140,9 +140,14 @@ Future<void> accessTimer() async {
   List<Timer> timers = await getAllTimers();
   Timer timerToAccess = await getTimerToAccess();
 
+  bool exit = false;
   timers.forEach((element) {
-    if (element.time == timerToAccess.time)
+    if (!exit) element.accessedDate = DateTime.now();
+
+    if (element.time == timerToAccess.time) {
       element.accessedDate = DateTime.now();
+      exit = true;
+    }
   });
 
   //timers[timers.indexOf(timerToAccess)].accessedDate = DateTime.now();

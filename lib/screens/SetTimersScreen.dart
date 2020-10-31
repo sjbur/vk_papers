@@ -1,14 +1,19 @@
-// import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:vk_papers/functions/Timers.dart';
-import 'package:vk_papers/functions/swipe.dart';
-import 'package:vk_papers/screens/FinishScreen.dart';
-import 'package:vk_papers/screens/ShowGroupsScreen.dart';
-import 'package:vk_papers/timepicker/flutter_datetime_picker.dart';
+import 'package:vk_papers/screens/WaitForNewsScreen.dart';
+import '../timepicker/flutter_datetime_picker.dart';
+
+import '../functions/Timers.dart';
+import '../functions/swipe.dart';
+
+import 'FinishScreen.dart';
+import 'ShowGroupsScreen.dart';
 
 class SetTimersScreen extends StatefulWidget {
+  final bool firstTime;
+
+  const SetTimersScreen({Key key, @required this.firstTime}) : super(key: key);
+
   @override
   _SetTimersScreenState createState() => _SetTimersScreenState();
 }
@@ -30,7 +35,7 @@ class _SetTimersScreenState extends State<SetTimersScreen> {
   }
 
   Future selected(String payload) async {
-    await Navigator.of(context).push(GoTo(ShowGroupsScreen(), left: true));
+    await Navigator.of(context).pushReplacement(GoTo(WaitForNewsScreen()));
   }
 
   Future makeNotifications(String message, String subtext,

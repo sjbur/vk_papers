@@ -1,10 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:vk_papers/screens/SetTimersScreen.dart';
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+import 'SetTimersScreen.dart';
 import '../functions/Token.dart' as Token;
-import 'package:vk_papers/screens/SetCategoriesScreen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -101,8 +100,12 @@ class _LoginScreenState extends State<LoginScreen> {
               }
               Token.saveToken(token.replaceAll("access_token=", ""));
 
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => SetTimersScreen()));
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => SetTimersScreen(
+                            firstTime: true,
+                          )));
             }
           },
         ),
