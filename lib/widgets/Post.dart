@@ -205,6 +205,22 @@ class _PostCardState extends State<PostCard> {
     }
   }
 
+  String shortStatNum(String num, {bool views = false}) {
+    String res;
+    double dNum = double.parse(num);
+
+    if (views) {
+      if (dNum > 1000) res = (dNum / 1000).floor().toString() + "K";
+    } else {
+      if (dNum > 10000) res = (dNum / 1000).toStringAsFixed(2) + "K";
+    }
+
+    if (res == null)
+      return num;
+    else
+      return res;
+  }
+
   Row postStatistics() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -217,7 +233,10 @@ class _PostCardState extends State<PostCard> {
                   icon: Icon(Icons.favorite),
                   onPressed: null,
                   padding: EdgeInsets.all(0)),
-              if (likes != null && likes != "0") Text(likes) else Text("")
+              if (likes != null && likes != "0")
+                Text(shortStatNum(likes))
+              else
+                Text("")
             ],
           ),
         ),
@@ -244,7 +263,10 @@ class _PostCardState extends State<PostCard> {
                 onPressed: null,
                 padding: EdgeInsets.all(0),
               ),
-              if (reposts != null && reposts != "0") Text(reposts) else Text("")
+              if (reposts != null && reposts != "0")
+                Text(shortStatNum(reposts))
+              else
+                Text("")
             ],
           ),
         ),
@@ -257,7 +279,10 @@ class _PostCardState extends State<PostCard> {
                 onPressed: null,
                 padding: EdgeInsets.all(0),
               ),
-              if (views != null && views != "0") Text(views) else Text("")
+              if (views != null && views != "0")
+                Text(shortStatNum(views, views: true))
+              else
+                Text("")
             ],
           ),
         )

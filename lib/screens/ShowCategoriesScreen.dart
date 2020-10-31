@@ -51,25 +51,54 @@ class _ShowCategoriesScreenState extends State<ShowCategoriesScreen> {
 
   List<Widget> generateButtons() {
     // sort by fav first
-    return List.generate(vk.groups.mainActivities.keys.length, (index) {
+    return List.generate(vk.groups.mainActivities.keys.length + 1, (index) {
+      if (index == 0) {
+        return FlatButton(
+            color: Colors.lightBlue,
+            onPressed: () async {
+              String sources = "";
+              vk.groups.mainActivities.values.forEach((groupList) {
+                groupList.forEach((group) {
+                  sources += "-" + group.id + ",";
+                });
+              });
+              await Navigator.of(context).push(GoTo(
+                TestNewsScreen(
+                  sources: sources,
+                  title: "Новости",
+                ),
+              ));
+            },
+            child: Text(
+              "Все категории",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ));
+      }
       return FlatButton(
-          color: Colors.lightBlue.shade400,
+          color: Colors.lightBlue,
           onPressed: () async {
             String sources = "";
-            vk.groups
-                .mainActivities[vk.groups.mainActivities.keys.toList()[index]]
+            vk
+                .groups
+                .mainActivities[
+                    vk.groups.mainActivities.keys.toList()[index - 1]]
                 .forEach((element) {
               sources += "-" + element.id + ",";
             });
             await Navigator.of(context).push(GoTo(
               TestNewsScreen(
                 sources: sources,
-                title: vk.groups.mainActivities.keys.toList()[index].toString(),
+                title: vk.groups.mainActivities.keys
+                    .toList()[index - 1]
+                    .toString(),
               ),
             ));
           },
           child: Text(
-            vk.groups.mainActivities.keys.toList()[index],
+            vk.groups.mainActivities.keys.toList()[index - 1],
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white,

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:vk_papers/functions/Timers.dart';
 import 'package:vk_papers/functions/swipe.dart';
+import 'package:vk_papers/screens/SetTimersScreen.dart';
 import 'package:vk_papers/screens/ShowCategoriesScreen.dart';
 import 'package:vk_papers/screens/TestNewsScreen.dart';
 
@@ -49,6 +50,15 @@ class _WaitForNewsScreenState extends State<WaitForNewsScreen>
         textAlign: TextAlign.center,
         style: TextStyle(fontWeight: FontWeight.w500),
       ),
+      FlatButton(
+          onPressed: () {
+            Navigator.of(context).pushReplacement(GoTo(ShowCategoriesScreen()));
+          },
+          child: Text(
+            "или можете почитать старое.",
+            style: TextStyle(fontWeight: FontWeight.w300),
+            textAlign: TextAlign.center,
+          )),
       Spacer(),
       Padding(
         padding: const EdgeInsets.all(32.0),
@@ -63,16 +73,22 @@ class _WaitForNewsScreenState extends State<WaitForNewsScreen>
   }
 
   checkNews() async {
-    ready = await getTimerToAccess() != null ? true : false;
+    bool timersOK = await timersExist();
+    if (!timersOK) {
+      await Navigator.of(context).pushReplacement(GoTo(SetTimersScreen()));
+    } else {
+      ready = await getTimerToAccess() != null ? true : false;
+      setState(() {});
 
-    // var accessedT = await getLastAccessedTimer();
-    // accessedT.time.trim();
-    // int h = int.parse(accessedT.time.split(":")[0]);
-    // int m = int.parse(accessedT.time.split(":")[1]);
-    // var curDate = new DateTime(accessedT.accessedDate.year,
-    //     accessedT.accessedDate.month, accessedT.accessedDate.day, h, m);
-    // print(curDate.millisecondsSinceEpoch.toString());
-    setState(() {});
+      List<Timer> ts = await getAllTimers();
+
+      ts.forEach((element) {
+        print(element.accessedDate != null
+            ? element.accessedDate.toString()
+            : " not accessed");
+        print(element.time.toString() + "\n");
+      });
+    }
   }
 
   @override

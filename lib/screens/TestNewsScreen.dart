@@ -39,7 +39,7 @@ class _TestNewsScreenState extends State<TestNewsScreen> {
     posts = await vk.newsfeed.getNews("?count=20&filters=post&source_ids=" +
         widget.sources +
         "&end_time=" +
-        (curDate.microsecondsSinceEpoch / 1000).toString());
+        (curDate.millisecondsSinceEpoch / 1000).toString());
 
     print(widget.sources);
 

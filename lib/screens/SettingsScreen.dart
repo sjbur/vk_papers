@@ -91,20 +91,20 @@ class _SettingsViewState extends State<SettingsView> {
                     child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    FlatButton(
-                      child: Text("Редактировать избранные списки"),
-                      onPressed: () {},
-                      color: Colors.blue,
-                      textColor: Colors.white,
-                    ),
-                    FlatButton(
-                      child: Text("Сбросить списки"),
-                      onPressed: () async {
-                        await clearCategories();
-                      },
-                      color: Colors.blue,
-                      textColor: Colors.white,
-                    ),
+                    // FlatButton(
+                    //   child: Text("Редактировать избранные списки"),
+                    //   onPressed: () {},
+                    //   color: Colors.blue,
+                    //   textColor: Colors.white,
+                    // ),
+                    // FlatButton(
+                    //   child: Text("Сбросить списки"),
+                    //   onPressed: () async {
+                    //     await clearCategories();
+                    //   },
+                    //   color: Colors.blue,
+                    //   textColor: Colors.white,
+                    // ),
                     FlatButton(
                       child: Text("Настроить напоминания"),
                       onPressed: () {
@@ -113,24 +113,24 @@ class _SettingsViewState extends State<SettingsView> {
                       color: Colors.blue,
                       textColor: Colors.white,
                     ),
-                    FlatButton(
-                      child: Text("Настройка оформления"),
-                      onPressed: () {},
-                      color: Colors.blue,
-                      textColor: Colors.white,
-                    ),
-                    FlatButton(
-                      child: Text("Связаться с разработчиком"),
-                      onPressed: () {},
-                      color: Colors.blue,
-                      textColor: Colors.white,
-                    ),
-                    FlatButton(
-                      child: Text("Сделать отзыв"),
-                      onPressed: () {},
-                      color: Colors.blue,
-                      textColor: Colors.white,
-                    ),
+                    // FlatButton(
+                    //   child: Text("Настройка оформления"),
+                    //   onPressed: () {},
+                    //   color: Colors.blue,
+                    //   textColor: Colors.white,
+                    // ),
+                    // FlatButton(
+                    //   child: Text("Связаться с разработчиком"),
+                    //   onPressed: () {},
+                    //   color: Colors.blue,
+                    //   textColor: Colors.white,
+                    // ),
+                    // FlatButton(
+                    //   child: Text("Сделать отзыв"),
+                    //   onPressed: () {},
+                    //   color: Colors.blue,
+                    //   textColor: Colors.white,
+                    // ),
                     FlatButton(
                       child: Text("Выйти из аккаунта"),
                       onPressed: () async {

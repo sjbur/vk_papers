@@ -87,10 +87,14 @@ class _SetTimersScreenState extends State<SetTimersScreen> {
                         containerHeight: 210.0,
                       ),
                       showTitleActions: true,
-                      onConfirm: (time) => setState(() => timers.add(
-                          time.hour.toString() +
-                              " : " +
-                              time.minute.toString())),
+                      onConfirm: (time) => setState(() {
+                            timers.add(time.hour.toString() +
+                                ":" +
+                                time.minute.toString());
+
+                            timers.sort((a, b) => (int.parse(a.split(":")[0])
+                                .compareTo(int.parse(b.split(":")[0]))));
+                          }),
                       currentTime: new DateTime(
                           DateTime.now().year,
                           DateTime.now().month,
@@ -145,7 +149,7 @@ class _SetTimersScreenState extends State<SetTimersScreen> {
                         await makeNotifications(
                             "VK Papers", "Новые новости уже пришли!");
                         await Navigator.of(context)
-                            .push(GoTo(FinishScreen(), left: true));
+                            .pushReplacement(GoTo(FinishScreen(), left: true));
                       }),
                 ),
               )

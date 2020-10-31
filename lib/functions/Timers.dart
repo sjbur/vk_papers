@@ -41,7 +41,13 @@ Future saveTimers(List<String> ls, List<Timer> timLs) async {
 Future<List<Timer>> getAllTimers() async {
   List<Timer> res = new List<Timer>();
   final file = await timersFile();
-  List ls = jsonDecode(await file.readAsString());
+  List ls;
+
+  try {
+    ls = jsonDecode(await file.readAsString());
+  } catch (ex) {}
+
+  if (ls == null) return null;
 
   ls.forEach((element) {
     element["accessed"] == null
