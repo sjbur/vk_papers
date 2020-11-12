@@ -4,8 +4,8 @@ import 'package:video_player/video_player.dart';
 
 class Videop extends StatefulWidget {
   final videoUrl;
-
   const Videop({Key key, this.videoUrl}) : super(key: key);
+
   @override
   _VideopState createState() => _VideopState();
 }
@@ -16,6 +16,7 @@ class _VideopState extends State<Videop> {
   @override
   void initState() {
     super.initState();
+
     _controller = VideoPlayerController.network(
       widget.videoUrl,
       videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),

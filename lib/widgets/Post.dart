@@ -225,65 +225,79 @@ class _PostCardState extends State<PostCard> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              IconButton(
-                  icon: Icon(Icons.favorite),
-                  onPressed: null,
-                  padding: EdgeInsets.all(0)),
-              if (likes != null && likes != "0")
-                Text(shortStatNum(likes))
-              else
-                Text("")
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(children: [
-            IconButton(
-              icon: Icon(Icons.comment),
-              onPressed: null,
-              padding: EdgeInsets.all(0),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                IconButton(
+                    iconSize: 18.0,
+                    icon: Icon(Icons.favorite),
+                    onPressed: null,
+                    padding: EdgeInsets.all(0)),
+                if (likes != null && likes != "0")
+                  Text(shortStatNum(likes))
+                else
+                  Text("")
+              ],
             ),
-            if (comments != null && comments != "0")
-              Text(comments)
-            else
-              Text("")
-          ]),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              IconButton(
-                icon: Icon(Icons.share),
-                onPressed: null,
-                padding: EdgeInsets.all(0),
-              ),
-              if (reposts != null && reposts != "0")
-                Text(shortStatNum(reposts))
-              else
-                Text("")
-            ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              IconButton(
-                icon: Icon(Icons.portrait),
-                onPressed: null,
-                padding: EdgeInsets.all(0),
+        Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(children: [
+                IconButton(
+                  iconSize: 18.0,
+                  icon: Icon(Icons.comment),
+                  onPressed: null,
+                  padding: EdgeInsets.all(0),
+                ),
+                if (comments != null && comments != "0")
+                  Text(comments)
+                else
+                  Text("")
+              ]),
+            )),
+        Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  IconButton(
+                    iconSize: 18.0,
+                    icon: Icon(Icons.share),
+                    onPressed: null,
+                    padding: EdgeInsets.all(0),
+                  ),
+                  if (reposts != null && reposts != "0")
+                    Text(shortStatNum(reposts))
+                  else
+                    Text("")
+                ],
               ),
-              if (views != null && views != "0")
-                Text(shortStatNum(views, views: true))
-              else
-                Text("")
-            ],
+            )),
+        Align(
+          alignment: Alignment.centerRight,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                IconButton(
+                  iconSize: 18.0,
+                  icon: Icon(Icons.portrait),
+                  onPressed: null,
+                  padding: EdgeInsets.all(0),
+                ),
+                if (views != null && views != "0")
+                  Text(shortStatNum(views, views: true))
+                else
+                  Text("")
+              ],
+            ),
           ),
         )
       ],
