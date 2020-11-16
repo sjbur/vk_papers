@@ -29,22 +29,26 @@ class VKUser {
   }
 
   Future<String> username() async {
-    var url = "https://api.vk.com/method/users.get?" +
-        "&access_token=" +
-        await VKController().getToken() +
-        "&v=" +
-        VKController().vkVersion;
+    try {
+      var url = "https://api.vk.com/method/users.get?" +
+          "&access_token=" +
+          await VKController().getToken() +
+          "&v=" +
+          VKController().vkVersion;
 
-    var response = await http.get(url);
-    Map<String, dynamic> js = await jsonDecode(response.body);
+      var response = await http.get(url);
+      Map<String, dynamic> js = await jsonDecode(response.body);
 
-    if (js.containsKey("error")) {
-      throw Exception(js["error"]);
-    } else {
-      print(js);
-      js = js["response"][0];
+      if (js.containsKey("error")) {
+        throw Exception(js["error"]);
+      } else {
+        print(js);
+        js = js["response"][0];
 
-      return js["first_name"] + " " + js["last_name"];
+        return js["first_name"] + " " + js["last_name"];
+      }
+    } catch (e) {
+      return null;
     }
   }
 }

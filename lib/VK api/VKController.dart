@@ -23,6 +23,7 @@ class VKController {
     groups = new VKGroups(vkVersion, await getToken());
     newsfeed = new VKNewsfeed();
     user = new VKUser();
+
     await groups.init();
 
     inited = true;

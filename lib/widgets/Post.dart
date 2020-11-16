@@ -17,6 +17,7 @@ class PostCard extends StatefulWidget {
   final BuildContext context;
 
   final String likes;
+  final bool userLikes;
   final String comments;
   final String views;
   final String reposts;
@@ -24,6 +25,7 @@ class PostCard extends StatefulWidget {
   final String accessToken;
   final String vkVersion;
 
+  final Map properties;
   final List<Attachment> attachments;
 
   PostCard(
@@ -34,11 +36,13 @@ class PostCard extends StatefulWidget {
       this.postText,
       this.attachments,
       this.likes,
+      this.userLikes,
       this.comments,
       this.reposts,
       this.views,
       this.accessToken,
-      this.vkVersion);
+      this.vkVersion,
+      this.properties);
 
   @override
   _PostCardState createState() => _PostCardState(this.context,
@@ -50,7 +54,8 @@ class PostCard extends StatefulWidget {
       likes: likes,
       comments: comments,
       views: views,
-      reposts: reposts);
+      reposts: reposts,
+      userLiked: userLikes);
 }
 
 class _PostCardState extends State<PostCard> {
@@ -67,6 +72,8 @@ class _PostCardState extends State<PostCard> {
 
   List<Attachment> attachments;
 
+  bool userLiked;
+
   _PostCardState(this.context,
       {this.groupName,
       this.avatarUrl,
@@ -74,6 +81,7 @@ class _PostCardState extends State<PostCard> {
       this.postText,
       this.attachments,
       this.likes,
+      this.userLiked,
       this.comments,
       this.reposts,
       this.views}) {
@@ -117,6 +125,8 @@ class _PostCardState extends State<PostCard> {
       ),
     );
   }
+
+  void likePost() async {}
 
   Widget buildPhotoAttachments() {
     List<Widget> photos = new List<Widget>();
@@ -233,8 +243,42 @@ class _PostCardState extends State<PostCard> {
               children: [
                 IconButton(
                     iconSize: 18.0,
-                    icon: Icon(Icons.favorite),
-                    onPressed: null,
+                    icon: Icon(
+                      Icons.favorite,
+                      color: userLiked == true ? Colors.pink : Colors.grey,
+                    ),
+                    onPressed: () async {
+                      userLiked = !userLiked;
+
+                      var url;
+
+                      if (userLiked) {
+                        url =
+                            "https://api.vk.com/method/likes.add?type=post&owner_id=" +
+                                widget.properties["ownerID"].toString() +
+                                "&item_id=" +
+                                widget.properties["postID"].toString() +
+                                "&access_token=" +
+                                widget.accessToken +
+                                "&v=" +
+                                widget.vkVersion;
+                      } else {
+                        url =
+                            "https://api.vk.com/method/likes.delete?type=post&owner_id=" +
+                                widget.properties["ownerID"].toString() +
+                                "&item_id=" +
+                                widget.properties["postID"].toString() +
+                                "&access_token=" +
+                                widget.accessToken +
+                                "&v=" +
+                                widget.vkVersion;
+                      }
+
+                      var response = await http.get(url);
+                      Map<String, dynamic> js = await jsonDecode(response.body);
+
+                      setState(() {});
+                    },
                     padding: EdgeInsets.all(0)),
                 if (likes != null && likes != "0")
                   Text(shortStatNum(likes))

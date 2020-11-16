@@ -183,11 +183,13 @@ class _BuildPostCardState extends State<BuildPostCard>
                 widget.posts[index].properties["text"],
                 widget.posts[index].attachments,
                 widget.posts[index].properties["likes"],
+                widget.posts[index].properties["user_likes"],
                 widget.posts[index].properties["comments"],
                 widget.posts[index].properties["reposts"],
                 widget.posts[index].properties["views"],
                 widget.vkToken,
-                widget.vk.vkVersion),
+                widget.vk.vkVersion,
+                widget.posts[index].properties),
           );
         });
   }

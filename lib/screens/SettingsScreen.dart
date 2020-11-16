@@ -39,7 +39,14 @@ class _SettingsViewState extends State<SettingsView> {
   void onLoad(BuildContext context) async {
     await vk.init();
     username = await vk.user.username();
-    avatar = await vk.user.getProfilePic_100();
+
+    if (username == null) {
+      await Token.clearToken();
+      await Navigator.of(context)
+          .pushReplacement(GoTo(LoginScreen(), left: true));
+    } else {
+      avatar = await vk.user.getProfilePic_100();
+    }
 
     setState(() {});
   }
