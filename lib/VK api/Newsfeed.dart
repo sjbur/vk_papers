@@ -64,6 +64,12 @@ class VKNewsfeed {
         String reposts =
             item["reposts"] != null ? item["reposts"]["count"].toString() : "";
 
+        bool userReposted = false;
+
+        if (reposts != null) {
+          userReposted = item["reposts"]["user_reposted"] == 0 ? false : true;
+        }
+
         String views =
             item["views"] != null ? item["views"]["count"].toString() : "";
         String isFavor = item["is_favorite"].toString();
@@ -82,6 +88,7 @@ class VKNewsfeed {
         _properties.putIfAbsent("comments", () => comments);
         _properties.putIfAbsent("isFavor", () => isFavor);
         _properties.putIfAbsent("reposts", () => reposts);
+        _properties.putIfAbsent("user_reposted", () => userReposted);
         _properties.putIfAbsent("views", () => views);
         _properties.putIfAbsent("postID", () => postID);
 

@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:vk_papers/VK%20api/Newsfeed.dart';
+import 'package:vk_papers/VK%20api/VKController.dart';
 import 'package:vk_papers/screens/FullscreenImage.dart';
 import 'package:vk_papers/widgets/Poll.dart';
 import 'package:vk_papers/widgets/VideoPlay.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class PostCard extends StatefulWidget {
   final String groupName;
@@ -21,12 +23,15 @@ class PostCard extends StatefulWidget {
   final String comments;
   final String views;
   final String reposts;
+  final bool userReposted;
 
   final String accessToken;
   final String vkVersion;
 
   final Map properties;
   final List<Attachment> attachments;
+
+  final VKController vk;
 
   PostCard(
       this.context,
@@ -39,53 +44,31 @@ class PostCard extends StatefulWidget {
       this.userLikes,
       this.comments,
       this.reposts,
+      this.userReposted,
       this.views,
       this.accessToken,
       this.vkVersion,
-      this.properties);
+      this.properties,
+      this.vk);
 
   @override
-  _PostCardState createState() => _PostCardState(this.context,
-      groupName: groupName,
-      avatarUrl: avatarUrl,
-      timeAgo: timeAgo,
-      postText: postText,
-      attachments: attachments,
-      likes: likes,
-      comments: comments,
-      views: views,
-      reposts: reposts,
-      userLiked: userLikes);
+  _PostCardState createState() => _PostCardState();
 }
 
 class _PostCardState extends State<PostCard> {
-  final String groupName;
-  final String avatarUrl;
   String timeAgo;
-  final String postText;
-  final BuildContext context;
-
-  final String likes;
-  final String comments;
-  final String views;
-  final String reposts;
-
-  List<Attachment> attachments;
 
   bool userLiked;
+  bool userReposted;
 
-  _PostCardState(this.context,
-      {this.groupName,
-      this.avatarUrl,
-      this.timeAgo,
-      this.postText,
-      this.attachments,
-      this.likes,
-      this.userLiked,
-      this.comments,
-      this.reposts,
-      this.views}) {
-    Duration diff = DateTime.now().difference(DateTime.parse(timeAgo));
+  @override
+  void initState() {
+    super.initState();
+
+    Duration diff = DateTime.now().difference(DateTime.parse(widget.timeAgo));
+
+    userLiked = widget.userLikes;
+    userReposted = widget.userReposted;
 
     if (diff.inMinutes > 60)
       timeAgo = diff.inHours.toString() + " ч. назад";
@@ -106,17 +89,17 @@ class _PostCardState extends State<PostCard> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(50.0),
                   child: FadeInImage.assetNetwork(
-                      placeholder: "assets/temp.png", image: avatarUrl),
+                      placeholder: "assets/temp.png", image: widget.avatarUrl),
                 )),
-            title: Text(groupName),
+            title: Text(widget.groupName),
             subtitle: Text(timeAgo),
           ),
-          if (postText != null || postText != "")
+          if (widget.postText != null || widget.postText != "")
             BuildTextPost(
-              postText: postText,
+              postText: widget.postText,
             ),
           buildPhotoAttachments(),
-          BuildPhotoLink(attachments),
+          BuildPhotoLink(widget.attachments),
           buildDocumentsAttachments(),
           buildVideos(),
           buildPoll(),
@@ -131,8 +114,8 @@ class _PostCardState extends State<PostCard> {
   Widget buildPhotoAttachments() {
     List<Widget> photos = new List<Widget>();
 
-    if (attachments != null) {
-      attachments.forEach((attachment) {
+    if (widget.attachments != null) {
+      widget.attachments.forEach((attachment) {
         if (attachment.type == "photo") {
           List sizes = attachment.content["sizes"];
           String thumbnail;
@@ -274,14 +257,13 @@ class _PostCardState extends State<PostCard> {
                                 widget.vkVersion;
                       }
 
-                      var response = await http.get(url);
-                      Map<String, dynamic> js = await jsonDecode(response.body);
+                      await http.get(url);
 
                       setState(() {});
                     },
                     padding: EdgeInsets.all(0)),
-                if (likes != null && likes != "0")
-                  Text(shortStatNum(likes))
+                if (widget.likes != null && widget.likes != "0")
+                  Text(shortStatNum(widget.likes))
                 else
                   Text("")
               ],
@@ -299,8 +281,8 @@ class _PostCardState extends State<PostCard> {
                   onPressed: null,
                   padding: EdgeInsets.all(0),
                 ),
-                if (comments != null && comments != "0")
-                  Text(comments)
+                if (widget.comments != null && widget.comments != "0")
+                  Text(widget.comments)
                 else
                   Text("")
               ]),
@@ -314,11 +296,18 @@ class _PostCardState extends State<PostCard> {
                   IconButton(
                     iconSize: 18.0,
                     icon: Icon(Icons.share),
-                    onPressed: null,
+                    color: userReposted ? Colors.lightBlue : Colors.grey,
+                    onPressed: () async {
+                      bool res = await widget.vk.wall.repostDialog(
+                          new Post(widget.properties, widget.attachments),
+                          context);
+
+                      if (res == true) setState(() => userReposted = true);
+                    },
                     padding: EdgeInsets.all(0),
                   ),
-                  if (reposts != null && reposts != "0")
-                    Text(shortStatNum(reposts))
+                  if (widget.reposts != null && widget.reposts != "0")
+                    Text(shortStatNum(widget.reposts))
                   else
                     Text("")
                 ],
@@ -336,8 +325,8 @@ class _PostCardState extends State<PostCard> {
                   onPressed: null,
                   padding: EdgeInsets.all(0),
                 ),
-                if (views != null && views != "0")
-                  Text(shortStatNum(views, views: true))
+                if (widget.views != null && widget.views != "0")
+                  Text(shortStatNum(widget.views, views: true))
                 else
                   Text("")
               ],
@@ -350,8 +339,8 @@ class _PostCardState extends State<PostCard> {
 
   Widget buildDocumentsAttachments() {
     List<Widget> docs = new List<Widget>();
-    if (attachments != null) {
-      attachments.forEach((attachment) {
+    if (widget.attachments != null) {
+      widget.attachments.forEach((attachment) {
         if (attachment.type == "gif") {
           docs.add(BuildGif(
               gifPreview: attachment.content["preview"]["photo"]["sizes"][0]
@@ -369,8 +358,8 @@ class _PostCardState extends State<PostCard> {
   Widget buildVideos() {
     List<Widget> res = new List<Widget>();
 
-    if (attachments != null) {
-      attachments.forEach((attachment) {
+    if (widget.attachments != null) {
+      widget.attachments.forEach((attachment) {
         if (attachment.type == "video") {
           res.add(VideoP(
             token: widget.accessToken,
@@ -390,8 +379,8 @@ class _PostCardState extends State<PostCard> {
   Widget buildPoll() {
     List<Widget> res = new List<Widget>();
 
-    if (attachments != null) {
-      attachments.forEach((attachment) {
+    if (widget.attachments != null) {
+      widget.attachments.forEach((attachment) {
         if (attachment.type == "poll") {
           res.add(Poll(
             vkToken: widget.accessToken,
@@ -505,9 +494,11 @@ class BuildPhotoLink extends StatelessWidget {
         linkUrl = element.content["url"];
 
         if (element.content["photo"] != null && element.content["photo"] != "")
-          element.content["photo"]["sizes"][1] == null
-              ? linkPic = element.content["photo"]["sizes"][0]["url"]
-              : linkPic = element.content["photo"]["sizes"][1]["url"];
+          linkPic = element.content["photo"]["sizes"]
+              [List.of(element.content["photo"]["sizes"]).length - 1]["url"];
+        // element.content["photo"]["sizes"][1] == null
+        //     ? linkPic = element.content["photo"]["sizes"][0]["url"]
+        //     : linkPic = element.content["photo"]["sizes"][1]["url"];
 
         exists = true;
       }
@@ -524,21 +515,24 @@ class BuildPhotoLink extends StatelessWidget {
             borderRadius: BorderRadius.circular(9.0),
             border: Border.all(color: Colors.grey, width: 0.5)),
         child: Column(children: [
-          Row(
-            children: [
-              Expanded(
-                //flex: 1,
-                child: ClipRRect(
-                    borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(6.0), bottom: Radius.zero),
-                    child: linkPic != null
-                        ? Image.network(
-                            linkPic,
-                            fit: BoxFit.fitWidth,
-                          )
-                        : Text("")),
-              ),
-            ],
+          Container(
+            height: 100,
+            child: Row(
+              children: [
+                Expanded(
+                  //flex: 1,
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(6.0), bottom: Radius.zero),
+                      child: linkPic != null
+                          ? Image.network(
+                              linkPic,
+                              // fit: BoxFit.fitWidth,
+                            )
+                          : Text("")),
+                ),
+              ],
+            ),
           ),
           Row(
             children: [
@@ -615,15 +609,20 @@ class VideoP extends StatefulWidget {
 }
 
 class _VideoPState extends State<VideoP> {
-  String player;
+  String url;
+  String platform = "";
   @override
   void initState() {
     super.initState();
-    getPlayer();
+    onLoad();
   }
 
-  void getPlayer() async {
-    var url = "https://api.vk.com/method/video.get?videos=" +
+  void onLoad() async {
+    await getPlayer();
+  }
+
+  Future getPlayer() async {
+    var url = "https://api.vk.com/method/video.get?extended=1&videos=" +
         widget.videoOwner +
         "_" +
         widget.videoId +
@@ -632,6 +631,8 @@ class _VideoPState extends State<VideoP> {
         "&v=" +
         widget.vkV;
 
+    print(url);
+
     var response = await http.get(url);
     Map<String, dynamic> js = await jsonDecode(response.body);
 
@@ -639,20 +640,43 @@ class _VideoPState extends State<VideoP> {
       throw Exception(js["error"]);
     } else {
       js = js["response"];
+      js = js["items"][0];
 
-      player = js["items"][0]["player"];
+      if (js.containsKey("platform")) {
+        print(js["platform"]);
+        platform = "YouTube";
+      } else {
+        print("vk video");
+        platform = "vk";
+      }
 
-      if (this.mounted) setState(() {});
+      setState(() {});
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return player != null
-        ? Videop(
-            videoUrl: player,
-          )
-        : Text("");
+    switch (platform) {
+      case "vk":
+        return VKVideoPlayer(
+            videoUrl: "https://m.vk.com/video" +
+                widget.videoOwner +
+                "_" +
+                widget.videoId);
+        break;
+
+      case "":
+        return Text("");
+        break;
+
+      default:
+        return Container(
+          child: WebView(
+            initialUrl: url,
+          ),
+        );
+        break;
+    }
   }
 }
 

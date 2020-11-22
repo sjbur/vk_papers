@@ -25,18 +25,20 @@ class _FullscreenImageState extends State<FullscreenImage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: Colors.black,
-        child: GestureDetector(
-          child: Center(
-            child: FadeInImage.assetNetwork(
-                placeholder: "assets/temp.png", image: widget.imageUrl),
-          ),
-          onTap: () {
-            Navigator.pop(context);
-          },
-        ),
+      appBar: AppBar(
+        backgroundColor: Colors.grey,
       ),
+      body: Container(
+          color: Colors.black,
+          child: InteractiveViewer(
+            child: Center(
+              child: FadeInImage.assetNetwork(
+                  placeholder: "assets/temp.png", image: widget.imageUrl),
+            ),
+            maxScale: 2,
+            minScale: 0.6,
+            boundaryMargin: const EdgeInsets.all(50),
+          )),
     );
   }
 }

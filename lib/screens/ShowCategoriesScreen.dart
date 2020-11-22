@@ -55,7 +55,7 @@ class _ShowCategoriesScreenState extends State<ShowCategoriesScreen> {
     return List.generate(vk.groups.mainActivities.keys.length + 1, (index) {
       if (index == 0) {
         return FlatButton(
-            color: Colors.lightBlue,
+            color: Colors.blue.shade500,
             onPressed: () async {
               String sources = "";
               vk.groups.mainActivities.values.forEach((groupList) {
@@ -79,7 +79,7 @@ class _ShowCategoriesScreenState extends State<ShowCategoriesScreen> {
             ));
       }
       return FlatButton(
-          color: Colors.lightBlue,
+          color: Colors.blue.shade500,
           onPressed: () async {
             String sources = "";
             vk

@@ -85,9 +85,9 @@ class _WaitForNewsScreenState extends State<WaitForNewsScreen>
       List<Timer> ts = await getAllTimers();
 
       ts.forEach((element) {
-        print(element.accessedDate != null
-            ? element.accessedDate.toString()
-            : " not accessed");
+        // print(element.accessedDate != null
+        //     ? element.accessedDate.toString()
+        //     : " not accessed");
         print(element.time.toString() + "\n");
       });
     }

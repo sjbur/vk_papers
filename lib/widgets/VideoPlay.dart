@@ -1,31 +1,62 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:flutter/material.dart';
+import 'package:html/parser.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
-class Videop extends StatefulWidget {
-  final videoUrl;
-  const Videop({Key key, this.videoUrl}) : super(key: key);
+class VKVideoPlayer extends StatefulWidget {
+  final String videoUrl;
 
+  const VKVideoPlayer({Key key, this.videoUrl}) : super(key: key);
   @override
-  _VideopState createState() => _VideopState();
+  VKVideoPlayerState createState() => VKVideoPlayerState();
 }
 
-class _VideopState extends State<Videop> {
+class VKVideoPlayerState extends State<VKVideoPlayer> {
   VideoPlayerController _controller;
+  Future<void> _initializeVideoPlayerFuture;
+  //
+  WebViewController wbC;
+  String url;
+
+  void getVideoLink(String body) {
+    print("started to extract");
+
+    List videoQLTS = ["240", "360", "480", "720", "1080"];
+    Map videoLinks = new Map();
+    var doc = parse(body);
+
+    doc.getElementsByTagName("source").forEach((element) {
+      element.attributes.forEach((key, value) {
+        if (key == "type") {
+          if (value == "video/mp4") {
+            String link = element.attributes["src"];
+
+            videoQLTS.forEach((element) {
+              if (link.contains(element + ".mp4"))
+                videoLinks.putIfAbsent(element, () => link);
+            });
+          }
+        }
+      });
+    });
+
+    url = videoLinks.values.first;
+    print(url);
+
+    _controller = VideoPlayerController.network(url);
+
+    _initializeVideoPlayerFuture = _controller.initialize();
+
+    _controller.setVolume(1.0);
+
+    if (this.mounted) setState(() {});
+
+    return;
+  }
 
   @override
   void initState() {
     super.initState();
-
-    _controller = VideoPlayerController.network(
-      widget.videoUrl,
-      videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
-    );
-
-    _controller.addListener(() {
-      setState(() {});
-    });
-    _controller.initialize();
   }
 
   @override
@@ -36,162 +67,78 @@ class _VideopState extends State<Videop> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: <Widget>[
-          Container(
-            padding: const EdgeInsets.all(20),
-            child: AspectRatio(
-              aspectRatio: _controller.value.aspectRatio,
-              child: Stack(
-                alignment: Alignment.bottomCenter,
-                children: <Widget>[
-                  VideoPlayer(_controller),
-                  ClosedCaption(text: _controller.value.caption.text),
-                  _ControlsOverlay(controller: _controller),
-                  VideoProgressIndicator(_controller,
-                      allowScrubbing: true,
-                      colors: VideoProgressColors(
-                          bufferedColor: Colors.lightBlue,
-                          backgroundColor: Colors.grey.shade200,
-                          playedColor: Colors.lightBlue.shade100)),
-                ],
-              ),
+    return Container(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Stack(children: [
+          SizedBox.shrink(
+            child: WebView(
+              onWebViewCreated: (w) {
+                wbC = w;
+              },
+              javascriptMode: JavascriptMode.unrestricted,
+              initialUrl: widget.videoUrl,
+              onPageFinished: (a) async {
+                print("page finished");
+                getVideoLink(await wbC.evaluateJavascript(
+                    "document.getElementsByTagName('html')[0].innerHTML"));
+              },
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ControlsOverlay extends StatelessWidget {
-  const _ControlsOverlay({Key key, this.controller}) : super(key: key);
-
-  static const _examplePlaybackRates = [
-    0.25,
-    0.5,
-    1.0,
-    1.5,
-    2.0,
-    3.0,
-    5.0,
-  ];
-
-  final VideoPlayerController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        AnimatedSwitcher(
-          duration: Duration(milliseconds: 50),
-          reverseDuration: Duration(milliseconds: 200),
-          child: controller.value.isPlaying
-              ? SizedBox.shrink()
-              : Container(
-                  color: Colors.black26,
-                  child: Center(
-                    child: Icon(
-                      Icons.play_arrow,
-                      color: Colors.white,
-                      size: 100.0,
+          FutureBuilder(
+              future: _initializeVideoPlayerFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return Center(
+                    child: AspectRatio(
+                      aspectRatio: _controller.value.aspectRatio,
+                      child: Stack(
+                        alignment: Alignment.bottomCenter,
+                        children: [
+                          VideoPlayer(_controller),
+                          AnimatedSwitcher(
+                            duration: Duration(milliseconds: 50),
+                            reverseDuration: Duration(milliseconds: 200),
+                            child: _controller.value.isPlaying
+                                ? SizedBox.shrink()
+                                : Container(
+                                    color: Colors.black26,
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.play_arrow,
+                                        color: Colors.white,
+                                        size: 100.0,
+                                      ),
+                                    ),
+                                  ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              if (this.mounted)
+                                setState(() {
+                                  _controller.value.isPlaying
+                                      ? _controller.pause()
+                                      : _controller.play();
+                                });
+                            },
+                          ),
+                          VideoProgressIndicator(_controller,
+                              allowScrubbing: true,
+                              colors: VideoProgressColors(
+                                  bufferedColor: Colors.lightBlue.shade100,
+                                  backgroundColor: Colors.grey.shade200,
+                                  playedColor: Colors.lightBlue)),
+                        ],
+                      ),
                     ),
-                  ),
-                ),
-        ),
-        GestureDetector(
-          onTap: () {
-            controller.value.isPlaying ? controller.pause() : controller.play();
-          },
-        ),
-        Align(
-          alignment: Alignment.topRight,
-          child: PopupMenuButton<double>(
-            initialValue: controller.value.playbackSpeed,
-            tooltip: 'Playback speed',
-            onSelected: (speed) {
-              controller.setPlaybackSpeed(speed);
-            },
-            itemBuilder: (context) {
-              return [
-                for (final speed in _examplePlaybackRates)
-                  PopupMenuItem(
-                    value: speed,
-                    child: Text('${speed}x'),
-                  )
-              ];
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                // Using less vertical padding as the text is also longer
-                // horizontally, so it feels like it would need more spacing
-                // horizontally (matching the aspect ratio of the video).
-                vertical: 12,
-                horizontal: 16,
-              ),
-              child: Text('${controller.value.playbackSpeed}x'),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _PlayerVideoAndPopPage extends StatefulWidget {
-  @override
-  _PlayerVideoAndPopPageState createState() => _PlayerVideoAndPopPageState();
-}
-
-class _PlayerVideoAndPopPageState extends State<_PlayerVideoAndPopPage> {
-  VideoPlayerController _videoPlayerController;
-  bool startedPlaying = false;
-
-  @override
-  void initState() {
-    super.initState();
-
-    // _videoPlayerController =
-    //     VideoPlayerController.asset('assets/Butterfly-209.mp4');
-    _videoPlayerController.addListener(() {
-      if (startedPlaying && !_videoPlayerController.value.isPlaying) {
-        Navigator.pop(context);
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _videoPlayerController.dispose();
-    super.dispose();
-  }
-
-  Future<bool> started() async {
-    await _videoPlayerController.initialize();
-    await _videoPlayerController.play();
-    startedPlaying = true;
-    return true;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      elevation: 0,
-      child: Center(
-        child: FutureBuilder<bool>(
-          future: started(),
-          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-            if (snapshot.data == true) {
-              return AspectRatio(
-                aspectRatio: _videoPlayerController.value.aspectRatio,
-                child: VideoPlayer(_videoPlayerController),
-              );
-            } else {
-              return const Text('waiting for video to load');
-            }
-          },
-        ),
+                  );
+                } else {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+              }),
+        ]),
       ),
     );
   }

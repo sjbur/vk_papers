@@ -41,7 +41,7 @@ class _TestNewsScreenState extends State<TestNewsScreen> {
         "&end_time=" +
         (curDate.millisecondsSinceEpoch / 1000).toString());
 
-    print(widget.sources);
+    // print(widget.sources);
 
     // make check in vk class
     if (posts == null)
@@ -186,10 +186,12 @@ class _BuildPostCardState extends State<BuildPostCard>
                 widget.posts[index].properties["user_likes"],
                 widget.posts[index].properties["comments"],
                 widget.posts[index].properties["reposts"],
+                widget.posts[index].properties["user_reposted"],
                 widget.posts[index].properties["views"],
                 widget.vkToken,
                 widget.vk.vkVersion,
-                widget.posts[index].properties),
+                widget.posts[index].properties,
+                widget.vk),
           );
         });
   }
