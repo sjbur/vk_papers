@@ -25,9 +25,8 @@ class _FullscreenImageState extends State<FullscreenImage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.grey,
-      ),
+      floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.close), onPressed: () => Navigator.pop(context)),
       body: Container(
           color: Colors.black,
           child: InteractiveViewer(

@@ -46,7 +46,7 @@ class _ShowCategoriesScreenState extends State<ShowCategoriesScreen> {
                   mainAxisSpacing: 5,
                   padding: const EdgeInsets.all(15),
                   children: generateButtons())
-              : Text("");
+              : Center(child: CircularProgressIndicator());
         }));
   }
 

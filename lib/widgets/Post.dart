@@ -61,6 +61,8 @@ class _PostCardState extends State<PostCard> {
   bool userLiked;
   bool userReposted;
 
+  var imageAvatar;
+
   @override
   void initState() {
     super.initState();
@@ -76,6 +78,14 @@ class _PostCardState extends State<PostCard> {
       timeAgo = "сейчас";
     else
       timeAgo = diff.inMinutes.toString() + " мин. назад";
+
+    imageAvatar = Image.network(widget.avatarUrl);
+  }
+
+  @override
+  void didChangeDependencies() {
+    precacheImage(imageAvatar.image, context);
+    super.didChangeDependencies();
   }
 
   @override
@@ -83,16 +93,39 @@ class _PostCardState extends State<PostCard> {
     return Card(
       child: Column(
         children: [
-          ListTile(
-            leading: Container(
-                decoration: BoxDecoration(shape: BoxShape.circle),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(50.0),
-                  child: FadeInImage.assetNetwork(
-                      placeholder: "assets/temp.png", image: widget.avatarUrl),
-                )),
-            title: Text(widget.groupName),
-            subtitle: Text(timeAgo),
+          Row(
+            children: [
+              Expanded(
+                child: ListTile(
+                  leading: Container(
+                      decoration: BoxDecoration(shape: BoxShape.circle),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(50.0),
+                        child: imageAvatar,
+                        // child: FadeInImage.assetNetwork(
+                        //     fadeOutDuration: Duration(milliseconds: 30),
+                        //     placeholder: "assets/group2.png",
+                        //     image: widget.avatarUrl),
+                      )),
+                  title: Text(widget.groupName),
+                  subtitle: Text(timeAgo),
+                ),
+              ),
+              IconButton(
+                  icon: Icon(
+                    Icons.more,
+                    color: Colors.grey,
+                  ),
+                  onPressed: () {
+                    // launch(urlString)
+                    launchURL(
+                        "https://vk.com/wall" +
+                            widget.properties["ownerID"].toString() +
+                            "_" +
+                            widget.properties["postID"].toString(),
+                        forceVC: false);
+                  })
+            ],
           ),
           if (widget.postText != null || widget.postText != "")
             BuildTextPost(
@@ -113,6 +146,7 @@ class _PostCardState extends State<PostCard> {
 
   Widget buildPhotoAttachments() {
     List<Widget> photos = new List<Widget>();
+    // List<Image> precachedPhotos = new List<Image>();
 
     if (widget.attachments != null) {
       widget.attachments.forEach((attachment) {
@@ -120,7 +154,7 @@ class _PostCardState extends State<PostCard> {
           List sizes = attachment.content["sizes"];
           String thumbnail;
           if (sizes.length > 3)
-            thumbnail = sizes[2]["url"];
+            thumbnail = sizes[0]["url"];
           else
             thumbnail = sizes[0]["url"];
 
@@ -133,12 +167,14 @@ class _PostCardState extends State<PostCard> {
               }));
             },
             child: Padding(
-              padding: const EdgeInsets.all(2.0),
-              child: Image.network(
-                thumbnail,
-                fit: BoxFit.fill,
-              ),
-            ),
+                padding: const EdgeInsets.all(2.0),
+                child: FadeInImage.assetNetwork(
+                    placeholder: "assets/temp.png", image: thumbnail)
+                // child: Image.network(
+                //   thumbnail,
+                //   fit: BoxFit.fill,
+                // ),
+                ),
           ));
         }
       });
@@ -494,8 +530,8 @@ class BuildPhotoLink extends StatelessWidget {
         linkUrl = element.content["url"];
 
         if (element.content["photo"] != null && element.content["photo"] != "")
-          linkPic = element.content["photo"]["sizes"]
-              [List.of(element.content["photo"]["sizes"]).length - 1]["url"];
+          linkPic = element.content["photo"]["sizes"][0]["url"];
+
         // element.content["photo"]["sizes"][1] == null
         //     ? linkPic = element.content["photo"]["sizes"][0]["url"]
         //     : linkPic = element.content["photo"]["sizes"][1]["url"];
@@ -515,34 +551,34 @@ class BuildPhotoLink extends StatelessWidget {
             borderRadius: BorderRadius.circular(9.0),
             border: Border.all(color: Colors.grey, width: 0.5)),
         child: Column(children: [
-          Container(
-            height: 100,
-            child: Row(
-              children: [
+          Row(
+            children: [
+              if (linkPic != null)
                 Expanded(
-                  //flex: 1,
                   child: ClipRRect(
                       borderRadius: BorderRadius.vertical(
                           top: Radius.circular(6.0), bottom: Radius.zero),
-                      child: linkPic != null
-                          ? Image.network(
-                              linkPic,
-                              // fit: BoxFit.fitWidth,
-                            )
-                          : Text("")),
-                ),
-              ],
-            ),
-          ),
-          Row(
-            children: [
-              Expanded(
-                  child: ListTile(
-                title: Text(linkTitle),
-                subtitle: Text(linkUrl),
-              )),
+                      child: Container(
+                        height: 100,
+                        child: FadeInImage.assetNetwork(
+                          placeholder: "assets/temp.png",
+                          image: linkPic,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                      // ? Image.network(
+                      //     linkPic,
+                      //     // fit: BoxFit.fitWidth,
+                      //   )
+                      ),
+                )
             ],
           ),
+          ListTile(
+            leading: linkPic != null ? null : Icon(Icons.web_asset),
+            title: Text(linkTitle),
+            subtitle: Text(linkUrl),
+          )
         ]),
       ),
     );
@@ -611,6 +647,12 @@ class VideoP extends StatefulWidget {
 class _VideoPState extends State<VideoP> {
   String url;
   String platform = "";
+  String wUrl;
+  String firstFrame;
+
+  bool vkPlay = false;
+  bool webLoaded = false;
+
   @override
   void initState() {
     super.initState();
@@ -640,17 +682,26 @@ class _VideoPState extends State<VideoP> {
       throw Exception(js["error"]);
     } else {
       js = js["response"];
-      js = js["items"][0];
 
-      if (js.containsKey("platform")) {
-        print(js["platform"]);
-        platform = "YouTube";
+      if (js["count"] != 0) {
+        js = js["items"][0];
+
+        if (js.containsKey("platform")) {
+          //print(js["platform"]);
+          platform = "YouTube";
+          wUrl = js["player"];
+          print(wUrl);
+        } else {
+          print("vk video");
+          platform = "vk";
+
+          firstFrame = js["image"][0]["url"];
+        }
       } else {
-        print("vk video");
-        platform = "vk";
+        platform = "";
       }
 
-      setState(() {});
+      if (this.mounted) setState(() {});
     }
   }
 
@@ -658,11 +709,27 @@ class _VideoPState extends State<VideoP> {
   Widget build(BuildContext context) {
     switch (platform) {
       case "vk":
-        return VKVideoPlayer(
-            videoUrl: "https://m.vk.com/video" +
-                widget.videoOwner +
-                "_" +
-                widget.videoId);
+        return vkPlay == true
+            ? VKVideoPlayer(
+                videoUrl: "https://m.vk.com/video" +
+                    widget.videoOwner +
+                    "_" +
+                    widget.videoId)
+            : InkWell(
+                onTap: () => setState(() => vkPlay = true),
+                child: Container(
+                  width: 200,
+                  height: 200,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: NetworkImage(firstFrame), fit: BoxFit.fill)),
+                  child: Center(
+                      child: Icon(
+                    Icons.play_arrow,
+                    color: Colors.white,
+                  )),
+                ),
+              );
         break;
 
       case "":
@@ -671,17 +738,28 @@ class _VideoPState extends State<VideoP> {
 
       default:
         return Container(
-          child: WebView(
-            initialUrl: url,
-          ),
+          width: 250,
+          height: 250,
+          child: Stack(children: [
+            WebView(
+                javascriptMode: JavascriptMode.unrestricted,
+                initialUrl: wUrl,
+                onPageFinished: (a) => setState(() {
+                      webLoaded = true;
+                    })),
+            Container(
+              child:
+                  webLoaded ? SizedBox.shrink() : CircularProgressIndicator(),
+            )
+          ]),
         );
         break;
     }
   }
 }
 
-launchURL(String url) async {
+launchURL(String url, {bool forceVC = true}) async {
   if (await canLaunch(url)) {
-    await launch(url);
+    await launch(url, forceSafariVC: forceVC);
   }
 }
