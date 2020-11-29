@@ -50,15 +50,17 @@ class _WaitForNewsScreenState extends State<WaitForNewsScreen>
         textAlign: TextAlign.center,
         style: TextStyle(fontWeight: FontWeight.w500),
       ),
-      FlatButton(
-          onPressed: () {
-            Navigator.of(context).pushReplacement(GoTo(ShowCategoriesScreen()));
-          },
-          child: Text(
-            "или можете почитать старое.",
-            style: TextStyle(fontWeight: FontWeight.w300),
-            textAlign: TextAlign.center,
-          )),
+      if (getLastAccessedTimer() != null)
+        FlatButton(
+            onPressed: () {
+              Navigator.of(context)
+                  .pushReplacement(GoTo(ShowCategoriesScreen()));
+            },
+            child: Text(
+              "или можете почитать старое.",
+              style: TextStyle(fontWeight: FontWeight.w300),
+              textAlign: TextAlign.center,
+            )),
       Spacer(),
       Padding(
         padding: const EdgeInsets.all(32.0),
@@ -80,6 +82,7 @@ class _WaitForNewsScreenState extends State<WaitForNewsScreen>
       )));
     } else {
       ready = await getTimerToAccess() != null ? true : false;
+      // print(ready);
       setState(() {});
 
       List<Timer> ts = await getAllTimers();
@@ -88,7 +91,7 @@ class _WaitForNewsScreenState extends State<WaitForNewsScreen>
         // print(element.accessedDate != null
         //     ? element.accessedDate.toString()
         //     : " not accessed");
-        print(element.time.toString() + "\n");
+        // print(element.time.toString() + "\n");
       });
     }
   }

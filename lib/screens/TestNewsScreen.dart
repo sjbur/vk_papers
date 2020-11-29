@@ -36,7 +36,7 @@ class _TestNewsScreenState extends State<TestNewsScreen> {
     var curDate = new DateTime(accessedT.accessedDate.year,
         accessedT.accessedDate.month, accessedT.accessedDate.day, h, m);
 
-    posts = await vk.newsfeed.getNews("?count=40&filters=post&source_ids=" +
+    posts = await vk.newsfeed.getNews("?count=20&filters=post&source_ids=" +
         widget.sources +
         "&end_time=" +
         (curDate.millisecondsSinceEpoch / 1000).toString());
@@ -64,12 +64,12 @@ class _TestNewsScreenState extends State<TestNewsScreen> {
 
   bool isRefreshing = false;
   void _scrollListener() async {
-    if (scroll.position.extentAfter < 700) {
+    if (scroll.position.extentAfter < 300) {
       if (!isRefreshing) {
         isRefreshing = true;
 
         List<Post> newPosts = await vk.newsfeed.getNews(
-            "?count=40&filters=post&start_from=" +
+            "?count=20&filters=post&start_from=" +
                 vk.newsfeed.startFrom +
                 "&source_ids=" +
                 widget.sources);

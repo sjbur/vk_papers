@@ -109,9 +109,9 @@ Future<Timer> getTimerToAccess() async {
       if ((currentTime - userTime).isNegative) {
         print("nope");
       } else {
-        lsAllowed.add(element);
+        // lsAllowed.add(element);
         print("ok");
-        res = element;
+        // res = element;
         return element;
       }
     }
@@ -124,9 +124,11 @@ Future<Timer> getLastAccessedTimer() async {
   List<Timer> ls = await getAllTimers();
   Timer res;
 
+  if (ls == null) return null;
+
   for (var i = ls.length - 1; i >= 0; i--) {
     var element = ls[i];
-    print(element.time);
+    // print(element.time);
     element.time.trim();
 
     if (element.accessedDate != null &&
@@ -146,11 +148,12 @@ Future<void> accessTimer() async {
 
     if (element.time == timerToAccess.time) {
       element.accessedDate = DateTime.now();
+      timerToAccess = element;
       exit = true;
     }
   });
 
-  //timers[timers.indexOf(timerToAccess)].accessedDate = DateTime.now();
+  timers[timers.indexOf(timerToAccess)].accessedDate = DateTime.now();
 
   await saveTimers(null, timers);
 }
