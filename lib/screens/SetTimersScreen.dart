@@ -22,6 +22,8 @@ class _SetTimersScreenState extends State<SetTimersScreen> {
 
   FlutterLocalNotificationsPlugin fltrNotification;
 
+  //TODO: просить об уведомлениях после того как юзер нажмет на кнопку в приложении, "разрешаю присылать уведомления"
+
   initializeNotifications() async {
     super.initState();
     var androidInitilize = new AndroidInitializationSettings('app_icon');

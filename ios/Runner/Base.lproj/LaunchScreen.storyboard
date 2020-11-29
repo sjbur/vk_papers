@@ -19,29 +19,16 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="VK Papers" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="20I-uC-7Vv">
-                                <rect key="frame" x="172" y="315" width="142" height="37"/>
-                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="31"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="image" translatesAutoresizingMaskIntoConstraints="NO" id="VUD-3B-FVA">
-                                <rect key="frame" x="78" y="66.5" width="86" height="534"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="86" id="gow-3d-bMh"/>
-                                </constraints>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="ldd-tY-116">
+                                <rect key="frame" x="83" y="241.5" width="209" height="184"/>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" red="0.0" green="0.65923166280000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="0.0" green="0.6182103753" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="VUD-3B-FVA" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leadingMargin" constant="62" id="5O9-S2-TgO"/>
-                            <constraint firstItem="20I-uC-7Vv" firstAttribute="top" secondItem="Ydg-fD-yQy" secondAttribute="bottom" constant="386" id="Fw7-Ct-vME"/>
-                            <constraint firstItem="VUD-3B-FVA" firstAttribute="top" secondItem="Ydg-fD-yQy" secondAttribute="bottom" constant="362" id="KAE-Py-4bA"/>
-                            <constraint firstItem="VUD-3B-FVA" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="PLO-67-RAv"/>
-                            <constraint firstItem="VUD-3B-FVA" firstAttribute="top" secondItem="Ydg-fD-yQy" secondAttribute="bottom" constant="362" id="Sfg-KR-9R8"/>
-                            <constraint firstItem="20I-uC-7Vv" firstAttribute="leading" secondItem="VUD-3B-FVA" secondAttribute="trailing" constant="8" id="TZN-lK-1DY"/>
-                            <constraint firstItem="20I-uC-7Vv" firstAttribute="top" secondItem="Ydg-fD-yQy" secondAttribute="bottom" constant="386" id="mAk-ZM-6fk"/>
-                            <constraint firstItem="VUD-3B-FVA" firstAttribute="centerY" secondItem="20I-uC-7Vv" secondAttribute="centerY" id="off-xO-BW4"/>
+                            <constraint firstItem="ldd-tY-116" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="0yp-4t-rqj"/>
+                            <constraint firstItem="ldd-tY-116" firstAttribute="top" secondItem="Ydg-fD-yQy" secondAttribute="bottom" constant="340" id="V8B-Nj-FF0"/>
+                            <constraint firstItem="ldd-tY-116" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="bYy-6e-h59"/>
+                            <constraint firstItem="ldd-tY-116" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leadingMargin" constant="67" id="mbt-zn-QIV"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -51,6 +38,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="image" width="672" height="534"/>
+        <image name="logo" width="562" height="184"/>
     </resources>
 </document>
