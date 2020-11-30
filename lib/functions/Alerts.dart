@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:vk_papers/widgets/Post.dart';
 
 // void showAddNewCategory() async {
 // TextEditingController _textController = TextEditingController();
@@ -140,4 +142,28 @@ Future<String> showTextDialog(String title, String hint, BuildContext context,
       }).then((val) async {
     return val;
   });
+}
+
+postMenu(BuildContext context, String urlToLaunch) {
+  return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Дополнительные действия"),
+          actions: [
+            FlatButton(
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: urlToLaunch));
+                  Navigator.of(context).pop();
+                },
+                child: Text("Скопировать ссылку")),
+            FlatButton(
+                onPressed: () {
+                  launchURL(urlToLaunch, forceVC: false);
+                  Navigator.of(context).pop();
+                },
+                child: Text("Открыть в браузере"))
+          ],
+        );
+      });
 }

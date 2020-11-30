@@ -10,6 +10,7 @@ import 'package:vk_papers/screens/FullscreenImage.dart';
 import 'package:vk_papers/widgets/Poll.dart';
 import 'package:vk_papers/widgets/VideoPlay.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:vk_papers/functions/Alerts.dart';
 
 class PostCard extends StatefulWidget {
   final String groupName;
@@ -118,12 +119,18 @@ class _PostCardState extends State<PostCard> {
                   ),
                   onPressed: () {
                     // launch(urlString)
-                    launchURL(
+                    // launchURL(
+                    //     "https://vk.com/wall" +
+                    //         widget.properties["ownerID"].toString() +
+                    //         "_" +
+                    //         widget.properties["postID"].toString(),
+                    //     forceVC: false);
+                    postMenu(
+                        context,
                         "https://vk.com/wall" +
                             widget.properties["ownerID"].toString() +
                             "_" +
-                            widget.properties["postID"].toString(),
-                        forceVC: false);
+                            widget.properties["postID"].toString());
                   })
             ],
           ),
@@ -131,11 +138,11 @@ class _PostCardState extends State<PostCard> {
             BuildTextPost(
               postText: widget.postText,
             ),
-          // buildPhotoAttachments(),
-          // BuildPhotoLink(widget.attachments),
-          // buildDocumentsAttachments(),
-          // buildVideos(),
-          // buildPoll(),
+          buildPhotoAttachments(),
+          BuildPhotoLink(widget.attachments),
+          buildDocumentsAttachments(),
+          buildVideos(),
+          buildPoll(),
           postStatistics(),
         ],
       ),
@@ -148,37 +155,42 @@ class _PostCardState extends State<PostCard> {
     List<Widget> photos = new List<Widget>();
     // List<Image> precachedPhotos = new List<Image>();
 
+    List<String> imagesHQList = new List<String>();
+    List<String> imagesLQList = new List<String>();
+
     if (widget.attachments != null) {
       widget.attachments.forEach((attachment) {
         if (attachment.type == "photo") {
           List sizes = attachment.content["sizes"];
-          String thumbnail;
-          if (sizes.length > 3)
-            thumbnail = sizes[0]["url"];
-          else
-            thumbnail = sizes[0]["url"];
 
-          photos.add(GestureDetector(
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) {
-                return FullscreenImage(
-                  imageUrl: sizes[sizes.length - 1]["url"],
-                );
-              }));
-            },
-            child: Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: FadeInImage.assetNetwork(
-                    placeholder: "assets/temp.png", image: thumbnail)
+          imagesLQList.add(sizes[0]["url"]);
+          imagesHQList.add(sizes[sizes.length - 1]["url"]);
+        }
+      });
+    }
+
+    imagesHQList.forEach((element) {
+      photos.add(GestureDetector(
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (_) {
+              return FullscreenImage(
+                imageIndex: imagesHQList.indexOf(element),
+                images: imagesHQList,
+              );
+            }));
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: FadeInImage.assetNetwork(
+                placeholder: "assets/temp.png",
+                image: imagesLQList[imagesHQList.indexOf(element)]
                 // child: Image.network(
                 //   thumbnail,
                 //   fit: BoxFit.fill,
                 // ),
                 ),
-          ));
-        }
-      });
-    }
+          )));
+    });
 
     List<Widget> res = [];
     List<Widget> res2 = [];
@@ -747,9 +759,11 @@ class _VideoPState extends State<VideoP> {
                 onPageFinished: (a) => setState(() {
                       webLoaded = true;
                     })),
-            Container(
-              child:
-                  webLoaded ? SizedBox.shrink() : CircularProgressIndicator(),
+            Center(
+              child: Container(
+                child:
+                    webLoaded ? SizedBox.shrink() : CircularProgressIndicator(),
+              ),
             )
           ]),
         );

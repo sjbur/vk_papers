@@ -19,13 +19,11 @@ class SetTimersScreen extends StatefulWidget {
 
 class _SetTimersScreenState extends State<SetTimersScreen> {
   List<String> timers = new List<String>();
-
   FlutterLocalNotificationsPlugin fltrNotification;
-
-  //TODO: просить об уведомлениях после того как юзер нажмет на кнопку в приложении, "разрешаю присылать уведомления"
+  bool allowToNotify = false;
 
   initializeNotifications() async {
-    super.initState();
+    // super.initState();
     var androidInitilize = new AndroidInitializationSettings('app_icon');
     var iOSinitilize = new IOSInitializationSettings();
     var initilizationsSettings =
@@ -69,10 +67,27 @@ class _SetTimersScreenState extends State<SetTimersScreen> {
     });
   }
 
+  void load() async {
+    if (await timersExist()) {
+      List<Timer> userTimers = await getAllTimers();
+
+      setState(() {
+        allowToNotify = true;
+
+        userTimers.forEach((element) {
+          timers.add(element.time);
+
+          timers.sort((a, b) => (int.parse(a.split(":")[0])
+              .compareTo(int.parse(b.split(":")[0]))));
+        });
+      });
+    }
+  }
+
   @override
   void initState() {
+    load();
     super.initState();
-    initializeNotifications();
   }
 
   @override
@@ -80,86 +95,107 @@ class _SetTimersScreenState extends State<SetTimersScreen> {
     return Scaffold(
         appBar: AppBar(
           title: Text("Таймеры"),
-          actions: [
-            IconButton(
-                icon: Icon(
-                  Icons.add,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  DatePicker.showTimePicker(context,
-                      showSecondsColumn: false,
-                      theme: DatePickerTheme(
-                        containerHeight: 210.0,
+          actions: allowToNotify
+              ? [
+                  IconButton(
+                      icon: Icon(
+                        Icons.add,
+                        color: Colors.white,
                       ),
-                      showTitleActions: true,
-                      onConfirm: (time) => setState(() {
-                            timers.add(time.hour.toString() +
-                                ":" +
-                                time.minute.toString());
+                      onPressed: () {
+                        DatePicker.showTimePicker(context,
+                            showSecondsColumn: false,
+                            theme: DatePickerTheme(
+                              containerHeight: 210.0,
+                            ),
+                            showTitleActions: true,
+                            onConfirm: (time) => setState(() {
+                                  timers.add(time.hour.toString() +
+                                      ":" +
+                                      time.minute.toString());
 
-                            timers.sort((a, b) => (int.parse(a.split(":")[0])
-                                .compareTo(int.parse(b.split(":")[0]))));
-                          }),
-                      currentTime: new DateTime(
-                          DateTime.now().year,
-                          DateTime.now().month,
-                          DateTime.now().day,
-                          DateTime.now().hour,
-                          0,
-                          0),
-                      locale: LocaleType.ru);
-                })
-          ],
+                                  timers.sort((a, b) =>
+                                      (int.parse(a.split(":")[0]).compareTo(
+                                          int.parse(b.split(":")[0]))));
+                                }),
+                            currentTime: new DateTime(
+                                DateTime.now().year,
+                                DateTime.now().month,
+                                DateTime.now().day,
+                                DateTime.now().hour,
+                                0,
+                                0),
+                            locale: LocaleType.ru);
+                      })
+                ]
+              : [],
         ),
-        body: Stack(
-          children: [
-            Container(
-              child: ListView.builder(
-                itemCount: timers.length,
-                itemBuilder: (context, index) {
-                  return Card(
-                    child: ListTile(
-                      title: Text(timers[index]),
-                      trailing: InkWell(
-                          child: Icon(Icons.cancel),
-                          onTap: () {
-                            setState(() {
-                              timers.removeAt(index);
-                            });
-                          }),
+        body: allowToNotify
+            ? Stack(
+                children: [
+                  Container(
+                    child: ListView.builder(
+                      itemCount: timers.length,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          child: ListTile(
+                            title: Text(timers[index]),
+                            trailing: InkWell(
+                                child: Icon(Icons.cancel),
+                                onTap: () {
+                                  setState(() {
+                                    timers.removeAt(index);
+                                  });
+                                }),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
-            ),
-            if (timers.isEmpty)
-              Align(
-                alignment: Alignment.center,
-                child: Text(
-                  'Вам нужно добавить таймеры',
-                ),
+                  ),
+                  if (timers.isEmpty)
+                    Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Вам нужно добавить таймеры',
+                      ),
+                    )
+                  else
+                    Container(
+                      alignment: Alignment.bottomCenter,
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        child: FlatButton(
+                            padding: EdgeInsets.all(16.0),
+                            color: Colors.blue,
+                            textColor: Colors.white,
+                            child: Text("Сохранить"),
+                            onPressed: () async {
+                              await saveTimers(timers, null);
+                              await makeNotifications(
+                                  "VK Papers", "Новые новости уже пришли!");
+                              await Navigator.of(context).pushReplacement(
+                                  GoTo(FinishScreen(), left: true));
+                            }),
+                      ),
+                    )
+                ],
               )
-            else
-              Container(
-                alignment: Alignment.bottomCenter,
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  child: FlatButton(
-                      padding: EdgeInsets.all(16.0),
-                      color: Colors.blue,
-                      textColor: Colors.white,
-                      child: Text("Сохранить"),
-                      onPressed: () async {
-                        await saveTimers(timers, null);
-                        await makeNotifications(
-                            "VK Papers", "Новые новости уже пришли!");
-                        await Navigator.of(context)
-                            .pushReplacement(GoTo(FinishScreen(), left: true));
-                      }),
+            : Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Разрешите приложению присылать уведомления, чтобы настроить промежутки времени, в которых можно читать новости",
+                      textAlign: TextAlign.center,
+                    ),
+                    FlatButton(
+                        onPressed: () => setState(() {
+                              initializeNotifications();
+                              allowToNotify = true;
+                            }),
+                        child: Text("Разрешаю присылать мне уведомления")),
+                  ],
                 ),
-              )
-          ],
-        ));
+              ));
   }
 }

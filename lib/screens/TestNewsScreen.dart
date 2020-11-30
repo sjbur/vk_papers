@@ -30,6 +30,7 @@ class _TestNewsScreenState extends State<TestNewsScreen> {
     vkToken = await vk.getToken();
 
     var accessedT = await getLastAccessedTimer();
+    print("accessed timer: " + accessedT.time);
     accessedT.time.trim();
     int h = int.parse(accessedT.time.split(":")[0]);
     int m = int.parse(accessedT.time.split(":")[1]);

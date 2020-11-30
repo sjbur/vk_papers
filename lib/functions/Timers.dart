@@ -126,15 +126,17 @@ Future<Timer> getLastAccessedTimer() async {
 
   if (ls == null) return null;
 
+  print("getting last accessed timer");
   for (var i = ls.length - 1; i >= 0; i--) {
     var element = ls[i];
-    // print(element.time);
+    print(element.time);
     element.time.trim();
 
     if (element.accessedDate != null &&
-        DateTime.now().day == element.accessedDate.day) res = element;
+        DateTime.now().day == element.accessedDate.day) return element;
   }
 
+  print("end");
   return res;
 }
 
