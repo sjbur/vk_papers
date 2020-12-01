@@ -29,18 +29,23 @@ class _TestNewsScreenState extends State<TestNewsScreen> {
     await vk.init();
     vkToken = await vk.getToken();
 
-    var accessedT = await getLastAccessedTimer();
-    print("accessed timer: " + accessedT.time);
-    accessedT.time.trim();
-    int h = int.parse(accessedT.time.split(":")[0]);
-    int m = int.parse(accessedT.time.split(":")[1]);
-    var curDate = new DateTime(accessedT.accessedDate.year,
-        accessedT.accessedDate.month, accessedT.accessedDate.day, h, m);
+    if (await checkLimitations()) {
+      var accessedT = await getLastAccessedTimer();
+      print("accessed timer: " + accessedT.time);
+      accessedT.time.trim();
+      int h = int.parse(accessedT.time.split(":")[0]);
+      int m = int.parse(accessedT.time.split(":")[1]);
+      var curDate = new DateTime(accessedT.accessedDate.year,
+          accessedT.accessedDate.month, accessedT.accessedDate.day, h, m);
 
-    posts = await vk.newsfeed.getNews("?count=20&filters=post&source_ids=" +
-        widget.sources +
-        "&end_time=" +
-        (curDate.millisecondsSinceEpoch / 1000).toString());
+      posts = await vk.newsfeed.getNews("?count=20&filters=post&source_ids=" +
+          widget.sources +
+          "&end_time=" +
+          (curDate.millisecondsSinceEpoch / 1000).toString());
+    } else {
+      posts = await vk.newsfeed
+          .getNews("?count=20&filters=post&source_ids=" + widget.sources);
+    }
 
     // print(widget.sources);
 

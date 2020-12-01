@@ -81,6 +81,7 @@ class _SettingsViewState extends State<SettingsView> {
             cookie.clearCookies();
             Token.clearToken();
 
+            Navigator.of(context).popUntil((route) => route.isFirst);
             await Navigator.of(context).pushReplacement(GoTo(LoginScreen()));
           },
           color: Colors.blue,
@@ -103,6 +104,8 @@ class _SettingsViewState extends State<SettingsView> {
             CookieManager cookie = new CookieManager();
             cookie.clearCookies();
             Token.clearToken();
+
+            Navigator.of(context).popUntil((route) => route.isFirst);
 
             await Navigator.of(context)
                 .pushReplacement(GoTo(LoginScreen(), left: true));
