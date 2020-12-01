@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:vk_papers/screens/ScreenLimits.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-import 'SetTimersScreen.dart';
+// import 'SetTimersScreen.dart';
 import '../functions/Token.dart' as Token;
 
 class LoginScreen extends StatefulWidget {
@@ -100,12 +101,8 @@ class _LoginScreenState extends State<LoginScreen> {
               }
               Token.saveToken(token.replaceAll("access_token=", ""));
 
-              Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => SetTimersScreen(
-                            firstTime: true,
-                          )));
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => ScreenLimits()));
             }
           },
         ),

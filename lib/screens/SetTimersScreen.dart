@@ -19,7 +19,8 @@ class SetTimersScreen extends StatefulWidget {
 
 class _SetTimersScreenState extends State<SetTimersScreen> {
   List<String> timers = new List<String>();
-  FlutterLocalNotificationsPlugin fltrNotification;
+  FlutterLocalNotificationsPlugin fltrNotification =
+      new FlutterLocalNotificationsPlugin();
   bool allowToNotify = false;
 
   initializeNotifications() async {
@@ -68,7 +69,7 @@ class _SetTimersScreenState extends State<SetTimersScreen> {
   }
 
   void load() async {
-    if (await timersExist()) {
+    if (await timersExist() && await checkLimitations()) {
       List<Timer> userTimers = await getAllTimers();
 
       setState(() {
@@ -173,8 +174,11 @@ class _SetTimersScreenState extends State<SetTimersScreen> {
                               await saveTimers(timers, null);
                               await makeNotifications(
                                   "VK Papers", "Новые новости уже пришли!");
-                              await Navigator.of(context).pushReplacement(
-                                  GoTo(FinishScreen(), left: true));
+
+                              Navigator.of(context)
+                                  .popUntil((route) => route.isFirst);
+                              Navigator.of(context)
+                                  .pushReplacement(GoTo(FinishScreen()));
                             }),
                       ),
                     )

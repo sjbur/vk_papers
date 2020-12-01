@@ -15,6 +15,26 @@ class Timer {
       };
 }
 
+Future noLimitationsSave() async {
+  final file = await timersFile();
+  Map limits = {'limitations': false};
+  file.writeAsString(jsonEncode(limits));
+}
+
+Future<bool> checkLimitations() async {
+  final file = await timersFile();
+  bool res = false;
+  try {
+    List src = jsonDecode(await file.readAsString());
+
+    src.forEach((element) {
+      if (Map.of(element).containsKey("limitations")) res = true;
+    });
+  } catch (e) {}
+
+  return res;
+}
+
 Future saveTimers(List<String> ls, List<Timer> timLs) async {
   final file = await timersFile();
 
@@ -26,11 +46,15 @@ Future saveTimers(List<String> ls, List<Timer> timLs) async {
 
     print(timersMap);
 
+    timersMap.add({"limitations": true});
+
     file.writeAsString(jsonEncode(timersMap));
   } else {
     timLs.forEach((element) {
       timersMap.add(element.toJson());
     });
+
+    timersMap.add({"limitations": true});
 
     print(timersMap);
 
@@ -50,10 +74,11 @@ Future<List<Timer>> getAllTimers() async {
   if (ls == null) return null;
 
   ls.forEach((element) {
-    element["accessed"] == null
-        ? res.add(new Timer(element["time"], null))
-        : res.add(
-            new Timer(element["time"], DateTime.parse(element["accessed"])));
+    if (!Map<String, dynamic>.of(element).containsKey("limitations"))
+      element["accessed"] == null
+          ? res.add(new Timer(element["time"], null))
+          : res.add(
+              new Timer(element["time"], DateTime.parse(element["accessed"])));
   });
 
   return res;
@@ -126,17 +151,18 @@ Future<Timer> getLastAccessedTimer() async {
 
   if (ls == null) return null;
 
-  print("getting last accessed timer");
+  // print("getting last accessed timer");
   for (var i = ls.length - 1; i >= 0; i--) {
     var element = ls[i];
-    print(element.time);
+    // print(element.time);
     element.time.trim();
 
     if (element.accessedDate != null &&
         DateTime.now().day == element.accessedDate.day) return element;
   }
 
-  print("end");
+  // print("end");
+  print(res);
   return res;
 }
 

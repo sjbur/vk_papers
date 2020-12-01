@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:vk_papers/functions/Timers.dart';
+import 'package:vk_papers/screens/ScreenLimits.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../VK api/VKController.dart';
@@ -35,6 +37,9 @@ class _SettingsViewState extends State<SettingsView> {
   VKController vk = new VKController();
   String username = "";
   String avatar;
+  bool limitsOn = false;
+
+  List<Widget> menu = [Text("")];
 
   void onLoad(BuildContext context) async {
     await vk.init();
@@ -42,11 +47,70 @@ class _SettingsViewState extends State<SettingsView> {
 
     if (username == null) {
       await Token.clearToken();
-      await Navigator.of(context)
-          .pushReplacement(GoTo(LoginScreen(), left: true));
+      await Navigator.of(context).pushReplacement(GoTo(LoginScreen()));
     } else {
       avatar = await vk.user.getProfilePic_100();
     }
+
+    limitsOn = await checkLimitations();
+
+    if (limitsOn)
+      menu = [
+        FlatButton(
+          child: Text("Настроить напоминания"),
+          onPressed: () {
+            Navigator.of(context).push(GoTo(SetTimersScreen(
+              firstTime: false,
+            )));
+          },
+          color: Colors.blue,
+          textColor: Colors.white,
+        ),
+        FlatButton(
+          child: Text("Контроль времени"),
+          onPressed: () {
+            Navigator.of(context).push(GoTo(ScreenLimits()));
+          },
+          color: Colors.blue,
+          textColor: Colors.white,
+        ),
+        FlatButton(
+          child: Text("Выйти из аккаунта"),
+          onPressed: () async {
+            CookieManager cookie = new CookieManager();
+            cookie.clearCookies();
+            Token.clearToken();
+
+            await Navigator.of(context).pushReplacement(GoTo(LoginScreen()));
+          },
+          color: Colors.blue,
+          textColor: Colors.white,
+        ),
+      ];
+    else
+      menu = menu = [
+        FlatButton(
+          child: Text("Контроль времени"),
+          onPressed: () {
+            Navigator.of(context).push(GoTo(ScreenLimits()));
+          },
+          color: Colors.blue,
+          textColor: Colors.white,
+        ),
+        FlatButton(
+          child: Text("Выйти из аккаунта"),
+          onPressed: () async {
+            CookieManager cookie = new CookieManager();
+            cookie.clearCookies();
+            Token.clearToken();
+
+            await Navigator.of(context)
+                .pushReplacement(GoTo(LoginScreen(), left: true));
+          },
+          color: Colors.blue,
+          textColor: Colors.white,
+        ),
+      ];
 
     setState(() {});
   }
@@ -96,65 +160,8 @@ class _SettingsViewState extends State<SettingsView> {
                   padding: const EdgeInsets.fromLTRB(8.0, 15.0, 8.0, 0),
                   child: Container(
                       child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // FlatButton(
-                      //   child: Text("Редактировать избранные списки"),
-                      //   onPressed: () {},
-                      //   color: Colors.blue,
-                      //   textColor: Colors.white,
-                      // ),
-                      // FlatButton(
-                      //   child: Text("Сбросить списки"),
-                      //   onPressed: () async {
-                      //     await clearCategories();
-                      //   },
-                      //   color: Colors.blue,
-                      //   textColor: Colors.white,
-                      // ),
-                      FlatButton(
-                        child: Text("Настроить напоминания"),
-                        onPressed: () {
-                          Navigator.of(context).push(GoTo(SetTimersScreen(
-                            firstTime: false,
-                          )));
-                        },
-                        color: Colors.blue,
-                        textColor: Colors.white,
-                      ),
-                      // FlatButton(
-                      //   child: Text("Настройка оформления"),
-                      //   onPressed: () {},
-                      //   color: Colors.blue,
-                      //   textColor: Colors.white,
-                      // ),
-                      // FlatButton(
-                      //   child: Text("Связаться с разработчиком"),
-                      //   onPressed: () {},
-                      //   color: Colors.blue,
-                      //   textColor: Colors.white,
-                      // ),
-                      // FlatButton(
-                      //   child: Text("Сделать отзыв"),
-                      //   onPressed: () {},
-                      //   color: Colors.blue,
-                      //   textColor: Colors.white,
-                      // ),
-                      FlatButton(
-                        child: Text("Выйти из аккаунта"),
-                        onPressed: () async {
-                          CookieManager cookie = new CookieManager();
-                          cookie.clearCookies();
-                          Token.clearToken();
-
-                          await Navigator.of(context)
-                              .push(GoTo(LoginScreen(), left: true));
-                        },
-                        color: Colors.blue,
-                        textColor: Colors.white,
-                      ),
-                    ],
-                  )),
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: menu)),
                 )
               ]))),
     );

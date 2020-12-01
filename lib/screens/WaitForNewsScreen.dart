@@ -35,7 +35,11 @@ class _WaitForNewsScreenState extends State<WaitForNewsScreen>
             color: Colors.lightBlue,
             onPressed: () async {
               await accessTimer();
-              await Navigator.of(context).push(GoTo(ShowCategoriesScreen()));
+              Navigator.of(context)
+                  .push(GoTo(ShowCategoriesScreen()))
+                  .then((value) => setState(() {
+                        checkNews();
+                      }));
             },
             child: Text(
               "Приступить",
@@ -43,32 +47,6 @@ class _WaitForNewsScreenState extends State<WaitForNewsScreen>
             ))
       ],
     )));
-    notReadyChildren.addAll([
-      Spacer(),
-      Text(
-        "Новости в пути! Когда время придет, вы увидите уведомление на своем экране телефона.",
-        textAlign: TextAlign.center,
-        style: TextStyle(fontWeight: FontWeight.w500),
-      ),
-      if (getLastAccessedTimer() != null)
-        FlatButton(
-            onPressed: () {
-              Navigator.of(context)
-                  .pushReplacement(GoTo(ShowCategoriesScreen()));
-            },
-            child: Text(
-              "или можете почитать старое.",
-              style: TextStyle(fontWeight: FontWeight.w300),
-              textAlign: TextAlign.center,
-            )),
-      Spacer(),
-      Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Text(
-            "Вы всегда можете настроить время для чтения, задав его в настройках.",
-            textAlign: TextAlign.center),
-      )
-    ]);
 
     checkNews();
     super.initState();
@@ -82,18 +60,43 @@ class _WaitForNewsScreenState extends State<WaitForNewsScreen>
       )));
     } else {
       ready = await getTimerToAccess() != null ? true : false;
-      // print(ready);
-      setState(() {});
-
-      List<Timer> ts = await getAllTimers();
-
-      ts.forEach((element) {
-        // print(element.accessedDate != null
-        //     ? element.accessedDate.toString()
-        //     : " not accessed");
-        // print(element.time.toString() + "\n");
-      });
     }
+
+    notReadyChildren.addAll([
+      Spacer(),
+      Text(
+        "Новости в пути! Когда время придет, вы увидите уведомление на своем экране телефона.",
+        textAlign: TextAlign.center,
+        style: TextStyle(fontWeight: FontWeight.w500),
+      ),
+    ]);
+
+    if (await getLastAccessedTimer() != null) {
+      print(await getLastAccessedTimer());
+      notReadyChildren.add(FlatButton(
+          onPressed: () {
+            Navigator.of(context)
+                .push(GoTo(ShowCategoriesScreen()))
+                .then((value) => setState(() {}));
+          },
+          child: Text(
+            "или можете почитать старое.",
+            style: TextStyle(fontWeight: FontWeight.w300),
+            textAlign: TextAlign.center,
+          )));
+    }
+
+    notReadyChildren.addAll([
+      Spacer(),
+      Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Text(
+            "Вы всегда можете настроить время для чтения, задав его в настройках.",
+            textAlign: TextAlign.center),
+      )
+    ]);
+
+    setState(() {});
   }
 
   @override
