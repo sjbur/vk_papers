@@ -5,6 +5,6 @@ VK Papers - это приложение для людей, для которых
 
 При возникновении каких-либо вопросов или предложений для сотрудничества: zacsergey@gmail.com
 
-![Alt text](https://github.com/sjbur/vk_papers/blob/master/screenshots/1.png "")
+
 ![Alt text](https://github.com/sjbur/vk_papers/blob/master/screenshots/2.png "")
 ![Alt text](https://github.com/sjbur/vk_papers/blob/master/screenshots/3.png "")
