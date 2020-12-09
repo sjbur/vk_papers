@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:vk_papers/screens/WaitForNewsScreen.dart';
-import '../timepicker/flutter_datetime_picker.dart';
 
+import '../timepicker/flutter_datetime_picker.dart';
 import '../functions/Timers.dart';
 import '../functions/swipe.dart';
 
+import 'package:vk_papers/screens/WaitForNewsScreen.dart';
 import 'FinishScreen.dart';
 
 class SetTimersScreen extends StatefulWidget {
@@ -23,33 +23,24 @@ class _SetTimersScreenState extends State<SetTimersScreen> {
       new FlutterLocalNotificationsPlugin();
   bool allowToNotify = false;
 
-  initializeNotifications() async {
-    // super.initState();
+  Future initNotifications() async {
     var androidInitilize = new AndroidInitializationSettings('app_icon');
     var iOSinitilize = new IOSInitializationSettings();
     var initilizationsSettings =
         new InitializationSettings(androidInitilize, iOSinitilize);
     fltrNotification = new FlutterLocalNotificationsPlugin();
     fltrNotification.initialize(initilizationsSettings,
-        onSelectNotification: selected);
+        onSelectNotification: (payload) =>
+            Navigator.of(context).pushReplacement(GoTo(WaitForNewsScreen())));
   }
 
-  Future selected(String payload) async {
-    await Navigator.of(context).pushReplacement(GoTo(WaitForNewsScreen()));
-  }
-
-  Future makeNotifications(String message, String subtext,
-      {String sound}) async {
-    var androidChannel = AndroidNotificationDetails(
-      'channel-id',
-      'channel-name',
-      'channel-description',
-      importance: Importance.Max,
-      priority: Priority.Max,
-    );
-
-    var iosChannel = IOSNotificationDetails();
-    var platformChannel = NotificationDetails(androidChannel, iosChannel);
+  Future makeNotifications(String message, String subtext) async {
+    var androidDetails = new AndroidNotificationDetails(
+        "VK Papers", "Sj Bur", "news arrived",
+        importance: Importance.Max);
+    var iSODetails = new IOSNotificationDetails();
+    var generalNotificationDetails =
+        new NotificationDetails(androidDetails, iSODetails);
 
     List<Timer> savedTimers = await getAllTimers();
 
@@ -63,14 +54,15 @@ class _SetTimersScreenState extends State<SetTimersScreen> {
           int.parse(textTime.split(":")[1].toString()), 0);
 
       fltrNotification.showDailyAtTime(
-          0, message, subtext, time, platformChannel,
-          payload: "0");
+          0, message, subtext, time, generalNotificationDetails);
     });
   }
 
   void load() async {
     if (await timersExist() && await checkLimitations()) {
       List<Timer> userTimers = await getAllTimers();
+
+      await initNotifications();
 
       setState(() {
         allowToNotify = true;
@@ -193,10 +185,12 @@ class _SetTimersScreenState extends State<SetTimersScreen> {
                       textAlign: TextAlign.center,
                     ),
                     FlatButton(
-                        onPressed: () => setState(() {
-                              initializeNotifications();
-                              allowToNotify = true;
-                            }),
+                        onPressed: () async {
+                          await initNotifications();
+                          setState(() {
+                            allowToNotify = true;
+                          });
+                        },
                         child: Text("Разрешаю присылать мне уведомления")),
                   ],
                 ),

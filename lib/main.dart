@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:vk_papers/functions/Timers.dart';
 
-import 'package:vk_papers/screens/LoginScreen.dart';
-import 'package:vk_papers/screens/ShowCategoriesScreen.dart';
-import 'package:vk_papers/screens/WaitForNewsScreen.dart';
+import 'functions/Timers.dart';
 import 'functions/Token.dart' as Token;
+import 'notifyTest.dart';
+import 'screens/LoginScreen.dart';
+import 'screens/ShowCategoriesScreen.dart';
+import 'screens/WaitForNewsScreen.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   checkLogin();
 }
 
 void checkLogin() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
+  runApp(MaterialApp(home: NotifyTest()));
   String token = await Token.getToken();
 
-  // DateTime dt1 = new DateTime(2020, 11, 30);
-  // DateTime dt2 = new DateTime(2020, 12, 1);
+  // // DateTime dt1 = new DateTime(2020, 11, 30);
+  // // DateTime dt2 = new DateTime(2020, 12, 1);
 
-  // print(dt2.difference(dt1).inDays);
+  // // print(dt2.difference(dt1).inDays);
 
-  print(token != null ? "successfully logged in" : "no token");
+  // print(token != null ? "successfully logged in" : "no token");
 
   if (token != null && await timersExist()) {
     print("limitations: " + (await checkLimitations()).toString());
