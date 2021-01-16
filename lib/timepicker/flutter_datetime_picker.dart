@@ -3,13 +3,13 @@ library flutter_datetime_picker;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:vk_papers/timepicker/src/datetime_picker_theme.dart';
-import 'package:vk_papers/timepicker/src/date_model.dart';
-import 'package:vk_papers/timepicker/src/i18n_model.dart';
+import 'package:vk_times/timepicker/src/datetime_picker_theme.dart';
+import 'package:vk_times/timepicker/src/date_model.dart';
+import 'package:vk_times/timepicker/src/i18n_model.dart';
 
-export 'package:vk_papers/timepicker/src/datetime_picker_theme.dart';
-export 'package:vk_papers/timepicker/src/date_model.dart';
-export 'package:vk_papers/timepicker/src/i18n_model.dart';
+export 'package:vk_times/timepicker/src/datetime_picker_theme.dart';
+export 'package:vk_times/timepicker/src/date_model.dart';
+export 'package:vk_times/timepicker/src/i18n_model.dart';
 
 typedef DateChangedCallback(DateTime time);
 typedef String StringAtIndexCallBack(int index);
@@ -224,11 +224,7 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
 
 class _DatePickerComponent extends StatefulWidget {
   _DatePickerComponent(
-      {Key key,
-      @required this.route,
-      this.onChanged,
-      this.locale,
-      this.pickerModel});
+      {@required this.route, this.onChanged, this.locale, this.pickerModel});
 
   final DateChangedCallback onChanged;
 

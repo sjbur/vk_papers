@@ -4,13 +4,13 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:vk_papers/VK%20api/Newsfeed.dart';
-import 'package:vk_papers/VK%20api/VKController.dart';
-import 'package:vk_papers/screens/FullscreenImage.dart';
-import 'package:vk_papers/widgets/Poll.dart';
-import 'package:vk_papers/widgets/VideoPlay.dart';
+import 'package:vk_times/VK%20api/Newsfeed.dart';
+import 'package:vk_times/VK%20api/VKController.dart';
+import 'package:vk_times/screens/FullscreenImage.dart';
+import 'package:vk_times/widgets/Poll.dart';
+import 'package:vk_times/widgets/VideoPlay.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:vk_papers/functions/Alerts.dart';
+import 'package:vk_times/functions/Alerts.dart';
 
 class PostCard extends StatefulWidget {
   final String groupName;

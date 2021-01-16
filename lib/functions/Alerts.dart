@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:vk_papers/widgets/Post.dart';
+import 'package:vk_times/widgets/Post.dart';
 
 // void showAddNewCategory() async {
 // TextEditingController _textController = TextEditingController();

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:vk_papers/screens/ScreenLimits.dart';
+import 'package:vk_times/screens/ScreenLimits.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 // import 'SetTimersScreen.dart';
@@ -23,7 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
             text: TextSpan(
               children: <TextSpan>[
                 TextSpan(
-                  text: "VK Papers",
+                  text: "VK Times",
                   style: TextStyle(
                       fontWeight: FontWeight.bold, color: Colors.black),
                 ),
@@ -117,7 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("VK Papers", style: TextStyle(color: Colors.white)),
+          title: Text("VK Times", style: TextStyle(color: Colors.white)),
         ),
         body: webLogin ? webLoginScreen() : welcomeScreen());
   }

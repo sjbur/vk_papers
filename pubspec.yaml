@@ -1,4 +1,4 @@
-name: vk_papers
+name: vk_times
 description: Удобное приложение для продуктивного чтения новостей из ВКонтакте.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -23,7 +23,8 @@ dependencies:
   # app_review: ^2.0.1
   photo_view: 
   html:
-  flutter_local_notifications: ^1.4.4+2 
+  rxdart: ^0.24.0
+  flutter_local_notifications: ^3.0.3
 
 flutter_icons:
   ios: true

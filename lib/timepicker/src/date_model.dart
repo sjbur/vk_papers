@@ -1,5 +1,5 @@
-import 'package:vk_papers/timepicker/src/date_format.dart';
-import 'package:vk_papers/timepicker/src/i18n_model.dart';
+import 'package:vk_times/timepicker/src/date_format.dart';
+import 'package:vk_times/timepicker/src/i18n_model.dart';
 import 'datetime_util.dart';
 import 'dart:math';
 

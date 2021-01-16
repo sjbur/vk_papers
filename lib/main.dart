@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'functions/Timers.dart';
 import 'functions/Token.dart' as Token;
-import 'notifyTest.dart';
+
 import 'screens/LoginScreen.dart';
 import 'screens/ShowCategoriesScreen.dart';
 import 'screens/WaitForNewsScreen.dart';
@@ -13,7 +13,6 @@ void main() {
 }
 
 void checkLogin() async {
-  runApp(MaterialApp(home: NotifyTest()));
   String token = await Token.getToken();
 
   // // DateTime dt1 = new DateTime(2020, 11, 30);

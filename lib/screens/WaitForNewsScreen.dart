@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:vk_papers/functions/Timers.dart';
-import 'package:vk_papers/functions/swipe.dart';
+import 'package:vk_times/functions/Timers.dart';
+import 'package:vk_times/functions/swipe.dart';
 
 import 'SetTimersScreen.dart';
 import 'ShowCategoriesScreen.dart';
@@ -117,7 +117,7 @@ class _WaitForNewsScreenState extends State<WaitForNewsScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("VK Papers"),
+        title: Text("VK Times"),
         actions: [
           IconButton(
               icon: Icon(

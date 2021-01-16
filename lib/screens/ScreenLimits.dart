@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:vk_papers/functions/Timers.dart';
-import 'package:vk_papers/screens/ShowCategoriesScreen.dart';
+import 'package:vk_times/functions/Timers.dart';
+import 'package:vk_times/screens/ShowCategoriesScreen.dart';
 
 import 'SetTimersScreen.dart';
 

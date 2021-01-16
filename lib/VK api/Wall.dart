@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:vk_papers/VK%20api/Newsfeed.dart';
+import 'package:vk_times/VK%20api/Newsfeed.dart';
 
 class VKWall {
   String _token;

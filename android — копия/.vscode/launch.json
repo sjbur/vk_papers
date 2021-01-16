@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "vk_papers",
+            "name": "vk_times",
             "request": "launch",
             "type": "dart"
         }

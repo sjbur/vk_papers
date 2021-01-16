@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:vk_papers/functions/Timers.dart';
-import 'package:vk_papers/screens/ScreenLimits.dart';
+import 'package:vk_times/functions/Timers.dart';
+import 'package:vk_times/screens/ScreenLimits.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../VK api/VKController.dart';

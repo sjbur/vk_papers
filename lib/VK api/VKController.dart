@@ -1,6 +1,6 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:vk_papers/VK%20api/User.dart';
-import 'package:vk_papers/VK%20api/Wall.dart';
+import 'package:vk_times/VK%20api/User.dart';
+import 'package:vk_times/VK%20api/Wall.dart';
 
 import 'Groups.dart';
 import 'Newsfeed.dart';
